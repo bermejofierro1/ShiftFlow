@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ modoEdicion ? 'Editar Turno' : 'Nuevo Turno' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="turno-modal-page">
+  
+  <div class="modal-container">
+    <div class="form-container">
+      <form [formGroup]="turnoForm" (ngSubmit)="guardarTurno()">
+
+        <!-- Header del formulario -->
+        <div class="form-header">
+          <div class="header-icon">
+            <ion-icon name="time-outline"></ion-icon>
+          </div>
+          <h1 class="form-title">{{ modoEdicion ? 'Editar turno' : 'Crear nuevo turno' }}</h1>
+          <p class="form-subtitle">{{ modoEdicion ? 'Actualiza los datos del turno' : 'Completa la informacion de tu turno' }}</p>
+        </div>
+        
+        <div class="custom-rate-card">
+          <div class="custom-rate-header">
+            <div class="custom-rate-text">
+              <span class="eyebrow">Tarifa personalizada</span>
+              <h3>Se cobro mas que la tarifa por hora?</h3>
+              <p>Activalo si este turno se pago a una tarifa distinta.</p>
+            </div>
+            <ion-toggle slot="end" formControlName="isCustomRate"></ion-toggle>
+          </div>
+
+          <div class="custom-rate-input" *ngIf="turnoForm.get('isCustomRate')?.value">
+            <label class="input-label">Cantidad por hora</label>
+            <div class="custom-input">
+              <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+              <ion-input type="number" formControlName="customHourlyRate" placeholder="Ej. 15.50" class="modern-input"></ion-input>
+            </div>
+            <small class="helper-text">Usaremos esta tarifa solo para este turno.</small>
+          </div>
+        </div>
+
+
+        <div class="input-group">
+          <!-- Fecha -->
+          <div class="input-field">
+            <label class="input-label">Fecha del Turno</label>
+            <div class="custom-input">
+              <ion-icon name="calendar-outline" class="input-icon"></ion-icon>
+              <ion-input type="date" formControlName="date" class="modern-input"></ion-input>
+            </div>
+          </div>
+
+          <!-- Horas -->
+          <div class="time-row">
+            <div class="input-field">
+              <label class="input-label">Hora Inicio</label>
+              <div class="custom-input">
+                <ion-icon name="play-outline" class="input-icon"></ion-icon>
+                <ion-input type="time" formControlName="startTime" class="modern-input"></ion-input>
+              </div>
+            </div>
+
+            <div class="input-field">
+              <label class="input-label">Hora Fin</label>
+              <div class="custom-input">
+                <ion-icon name="stop-outline" class="input-icon"></ion-icon>
+                <ion-input type="time" formControlName="endTime" class="modern-input"></ion-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <label class="input-label">Propinas (EUR)</label>
+            <div class="custom-input">
+              <ion-icon name="wallet-outline" class="input-icon"></ion-icon>
+              <ion-input type="number" formControlName="tips" placeholder="0.00" class="modern-input"></ion-input>
+            </div>
+          </div>
+
+          <!-- Ubicacion -->
+          <div class="input-field">
+            <label class="input-label">Ubicacion</label>
+            <div class="custom-input">
+              <ion-icon name="location-outline" class="input-icon"></ion-icon>
+              <ion-input formControlName="location" placeholder="Donde es el turno?" class="modern-input"></ion-input>
+            </div>
+          </div>
+
+          <!-- Tiempo de descanso -->
+          <div class="input-field">
+            <label class="input-label">Tiempo de descanso (minutos)</label>
+            <div class="custom-input">
+              <ion-icon name="cafe-outline" class="input-icon"></ion-icon>
+              <ion-input type="number" formControlName="breakTime" placeholder="0" class="modern-input"></ion-input>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="input-field">
+            <label class="input-label">Estado del Turno</label>
+            <div class="custom-select">
+              <ion-icon name="flag-outline" class="input-icon"></ion-icon>
+              <ion-select formControlName="status" class="modern-select">
+                <ion-select-option value="scheduled">Programado</ion-select-option>
+                <ion-select-option value="in_progress">En curso</ion-select-option>
+                <ion-select-option value="completed">Completado</ion-select-option>
+                <ion-select-option value="cancelled">Cancelado</ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+
+          <!-- Notas -->
+          <div class="input-field">
+            <label class="input-label">Notas Adicionales</label>
+            <div class="custom-textarea">
+              <ion-textarea 
+                formControlName="notes" 
+                placeholder="Observaciones, comentarios o detalles importantes..." 
+                rows="4" 
+                class="modern-textarea">
+              </ion-textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen del turno (opcional) -->
+        <div class="summary-card" *ngIf="showSummary">
+          <h3>Resumen del Turno</h3>
+          <div class="summary-row">
+            <span>Duracion estimada:</span>
+            <span>{{ calculatedHours }} horas</span>
+          </div>
+           <div class="summary-row">
+            <span>Salario:</span>
+            <span>{{ calculatedSalary }} EUR</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Ingresos totales:</span>
+            <span>{{ totalIncome }} EUR</span>
+          </div>
+        </div>
+
+        <!-- Boton de guardar -->
+        <ion-button expand="block" type="submit" [disabled]="loading || turnoForm.invalid" class="submit-btn">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          {{ loading ? 'Guardando...' : (modoEdicion ? 'Actualizar turno' : 'Crear turno') }}
+        </ion-button>
+
+        <!-- Mensaje de error -->
+        <ion-text color="danger" *ngIf="errorMessage" class="error-message">
+          <ion-icon name="warning-outline"></ion-icon>
+          {{ errorMessage }}
+        </ion-text>
+
+      </form>
+    </div>
+  </div>
+
+</ion-content>

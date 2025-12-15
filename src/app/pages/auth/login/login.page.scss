@@ -1,0 +1,295 @@
+.login-page {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  
+  .login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+////HEADER/////
+.login-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  width: 100%;
+  
+  .logo-container {
+    margin-bottom: 1.5rem;
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  .welcome-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .welcome-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+///FORMULARIO////
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(40px);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 100%;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 10px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+
+.input-group {
+  margin-bottom: 2rem;
+}
+
+
+.custom-input {
+  --background: rgba(248, 249, 250, 0.8);
+  --border-radius: 16px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  margin-bottom: 1rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  
+  ion-icon {
+    color: #667eea;
+    font-size: 1.2rem;
+    margin-right: 12px;
+  }
+  
+  &.item-has-focus {
+    --background: rgba(255, 255, 255, 0.95);
+    border-color: #667eea;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+.modern-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 1rem;
+  --placeholder-color: #9ca3af;
+  --placeholder-opacity: 1;
+  color: #1f2937;
+  font-weight: 500;
+  
+  &.native-input {
+    font-size: 16px; 
+  }
+}
+
+
+.login-btn {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --background-activated: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  --background-hover: linear-gradient(135deg, #6d83ed 0%, #7f55b0 100%);
+  --border-radius: 16px;
+  --box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+  --padding-top: 18px;
+  --padding-bottom: 18px;
+  
+  height: 56px;
+  margin: 0 0 1.5rem 0;
+  font-weight: 600;
+  text-transform: none;
+  transition: all 0.3s ease;
+  
+  .btn-text {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+  }
+  
+  ion-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+  
+  &:active {
+    --box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    transform: translateY(2px);
+    
+    ion-icon {
+      transform: translateX(4px);
+    }
+  }
+  
+  &[disabled] {
+    --background: #d1d5db;
+    --box-shadow: none;
+    transform: none;
+  }
+}
+
+/////MENSAJES DE ERROR/////
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 0.9rem;
+  font-weight: 500;
+  
+  ion-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+}
+
+
+.footer-links {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.switch-link {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+  
+  .link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    
+    &:active {
+      background: rgba(102, 126, 234, 0.1);
+    }
+  }
+}
+
+/////RESPONSIVE/////
+// Móviles pequeños
+@media (max-width: 360px) {
+  .login-page .login-container {
+    padding: 1rem;
+  }
+  
+  .form-container {
+    padding: 1.5rem;
+  }
+  
+  .login-header {
+    margin-bottom: 2rem;
+    
+    .logo {
+      width: 70px;
+      height: 70px;
+      font-size: 1.8rem;
+    }
+    
+    .welcome-title {
+      font-size: 1.7rem;
+    }
+  }
+}
+
+// Tablets
+@media (min-width: 768px) {
+  .login-page .login-container {
+    max-width: 440px;
+    padding: 3rem 2rem;
+  }
+  
+  .form-container {
+    padding: 2.5rem;
+    border-radius: 28px;
+  }
+  
+  .login-header .logo {
+    width: 90px;
+    height: 90px;
+    font-size: 2.2rem;
+  }
+}
+
+// WEB
+@media (min-width: 1024px) {
+  .login-page {
+    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .form-container {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 35px 60px rgba(0, 0, 0, 0.2),
+        0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+// Safe areas para dispositivos con notch
+@supports (padding: max(0px)) {
+  .login-page .login-container {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+    padding-top: max(2rem, env(safe-area-inset-top));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+}
+
+// Animaciones de entrada
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header,
+.form-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.form-container {
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}

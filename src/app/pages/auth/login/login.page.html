@@ -1,0 +1,64 @@
+<ion-content class="login-page">
+  <div class="login-container">
+    
+    <!-- Header dentro del contenido para mejor centrado -->
+    <div class="login-header">
+      <div class="logo-container">
+        <div class="logo">👋</div>
+      </div>
+      <h1 class="welcome-title">Bienvenido</h1>
+      <p class="welcome-subtitle">Inicia sesión en tu cuenta</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="form-container">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        
+        <div class="input-group">
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input 
+              type="email" 
+              formControlName="email"
+              placeholder="Tu email"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input 
+              type="password" 
+              formControlName="password"
+              placeholder="Tu contraseña"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          [disabled]="loading" 
+          class="login-btn">
+          <span class="btn-text">Continuar</span>
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        </ion-button>
+
+        <ion-text color="danger" *ngIf="errorMessage" class="error-message">
+          <ion-icon name="warning-outline"></ion-icon>
+          {{ errorMessage }}
+        </ion-text>
+
+        <div class="footer-links">
+          <p class="switch-link">
+            ¿No tienes cuenta?
+            <a routerLink="/register" class="link">Crear cuenta</a>
+          </p>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</ion-content>

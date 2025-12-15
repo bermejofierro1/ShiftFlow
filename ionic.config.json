@@ -1,0 +1,7 @@
+{
+  "name": "ShiftFlow",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

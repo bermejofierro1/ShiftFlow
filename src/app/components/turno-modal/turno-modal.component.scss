@@ -1,0 +1,451 @@
+.turno-modal-page {
+  --background: #f8fafc;
+  height: 100%;
+  overflow: hidden;
+  
+  .modal-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  padding: 2rem 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: none;
+}
+
+// Header del formulario
+.form-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  
+  .header-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    
+    ion-icon {
+      font-size: 1.8rem;
+      color: white;
+    }
+  }
+  
+  .form-title {
+    color: #1f2937;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .form-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-field {
+  margin-bottom: 1.5rem;
+}
+
+.custom-rate-card {
+  background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+  border: 1px solid #e0e7ff;
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.12);
+}
+
+.custom-rate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.custom-rate-text {
+  color: #1f2937;
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 0.15rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  p {
+    margin: 0.25rem 0 0 0;
+    color: #4b5563;
+    font-size: 0.9rem;
+  }
+}
+
+.custom-rate-card ion-toggle {
+  --background: #e5e7eb;
+  --background-checked: #667eea;
+  --handle-background: #ffffff;
+  --handle-background-checked: #ffffff;
+  transform: scale(1.05);
+}
+
+.custom-rate-input {
+  margin-top: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0.75rem 1rem 1rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+
+  .helper-text {
+    display: block;
+    margin-top: 0.35rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+}
+
+.input-label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+// Inputs personalizados
+.custom-input {
+  background: rgba(248, 249, 250, 0.8);
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  min-height: 56px;
+  
+  &:focus-within {
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.custom-select {
+  background: rgba(248, 249, 250, 0.8);
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  min-height: 56px;
+  
+  &:focus-within {
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.custom-textarea {
+  background: rgba(248, 249, 250, 0.8);
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:focus-within {
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+}
+
+// Inputs modernos
+.modern-input {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --background: transparent;
+  border: none !important;
+  --box-shadow: none !important;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  
+  &.native-input {
+    font-size: 16px;
+  }
+}
+
+.modern-select {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.modern-textarea {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --background: transparent;
+  --border: none !important;
+  --box-shadow: none !important;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+// Iconos
+.input-icon {
+  font-size: 1.2rem;
+  color: #667eea;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+// Layout responsivo
+.time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.half {
+  margin-bottom: 0;
+}
+
+// Botón de enviar
+.submit-btn {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --background-activated: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  --background-hover: linear-gradient(135deg, #6d83ed 0%, #7f55b0 100%);
+  --border-radius: 16px;
+  --box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  --padding-top: 18px;
+  --padding-bottom: 18px;
+  
+  height: 56px;
+  margin: 2rem 0 1rem 0;
+  font-weight: 600;
+  text-transform: none;
+  
+  &:disabled {
+    --background: #d1d5db;
+    --box-shadow: none;
+  }
+}
+
+// Mensaje de error
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 0.9rem;
+  font-weight: 500;
+  
+  ion-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+}
+
+// Resumen del turno
+.summary-card {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: white;
+  margin: 1.5rem 0;
+  
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  span {
+    font-weight: 500;
+  }
+  
+  span:last-child {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+}
+
+// =============================================
+// RESPONSIVE DESIGN
+// =============================================
+
+// Móviles pequeños (hasta 360px)
+@media (max-width: 360px) {
+  .form-container {
+    padding: 1.5rem 1rem;
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .form-header {
+    margin-bottom: 2rem;
+    
+    .header-icon {
+      width: 50px;
+      height: 50px;
+      
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .form-title {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .time-row,
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .custom-input,
+  .custom-select {
+    min-height: 52px;
+  }
+}
+
+// Tablets (768px+)
+@media (min-width: 768px) {
+  .form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 24px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .turno-modal-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    
+    .modal-container {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+}
+
+// Desktop (1024px+)
+@media (min-width: 1024px) {
+  .form-container {
+    max-width: 500px;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Safe areas para dispositivos con notch
+@supports (padding: max(0px)) {
+  .form-container {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+}
+
+// Animaciones de entrada
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container {
+  animation: slideInUp 0.4s ease-out;
+}
+
+// Scroll personalizado
+.form-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 3px;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+  background: #5a6fd8;
+}

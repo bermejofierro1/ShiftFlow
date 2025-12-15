@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis Turnos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="mis-turnos-page" >
+  <div class="content-container">
+    
+    <!-- Spinner de carga -->
+    <div class="loading-container" *ngIf="loading">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="!loading && (!turnosPorSemana || turnosPorSemana.length === 0)">
+      <div class="empty-icon">📋</div>
+      <h3>No hay turnos</h3>
+      <p>Toca el botón + para crear tu primer turno</p>
+    </div>
+
+    <!-- Lista de turnos por semana -->
+    <div *ngFor="let semana of turnosPorSemana" class="week-card">
+      
+      <h2>{{ semana.weekLabel }}</h2>
+      <p class="week-summary">€{{ semana.salarioTotal }} | {{ semana.horasTotales }}h</p>
+
+      <ion-list lines="none">
+        <ion-item *ngFor="let turno of semana.turnos" class="turno-item" button detail="false">
+        
+
+          <ion-label class="turno-info">
+            <h3>
+              {{ formatDate(turno.date) }} 
+              <span *ngIf="turno.status==='completed'" class="top">Top</span>
+              
+            </h3>
+            
+            <div class="info-row hours">
+                <span *ngIf="turno.customHourlyRate != null">💰 {{ turno.customHourlyRate }}/h</span>
+              {{ turno.startTime }} - {{ turno.endTime }} ({{ turno.hours }}h)
+            </div>
+            
+            <div class="info-row salary">
+              Salario: €{{ turno.salary }}
+            </div>
+            
+            <div class="info-row tips">
+              Propinas: €{{ turno.tips }}
+            </div>
+            
+            <div class="info-row notes" *ngIf="turno.notes">
+              {{ turno.notes }}
+            </div>
+          </ion-label>
+          
+          <!-- Botones de acción - siempre visibles en móvil -->
+          <ion-buttons slot="end">
+            <ion-button (click)="editarTurno(turno); $event.stopPropagation()" 
+                       color="primary" 
+                       size="small"
+                       aria-label="Editar turno">
+              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button (click)="eliminarTurno(turno.id); $event.stopPropagation()" 
+                       color="danger" 
+                       size="small"
+                       aria-label="Eliminar turno">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-list>
+    </div>
+
+   
+
+  </div>
+
+   <!-- Botón FAB optimizado para móvil -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="abrirCrearTurno()" 
+                     [disabled]="!userIdActual"
+                     aria-label="Crear nuevo turno">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+</ion-content>

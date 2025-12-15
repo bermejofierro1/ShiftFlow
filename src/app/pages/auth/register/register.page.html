@@ -1,0 +1,102 @@
+<ion-content class="register-page">
+  <div class="register-container">
+    
+    <!-- Header moderno -->
+    <div class="register-header">
+      <div class="logo-container">
+        <div class="logo">🚀</div>
+      </div>
+      <h1 class="welcome-title">Crear Cuenta</h1>
+      <p class="welcome-subtitle">Únete a nuestro equipo</p>
+    </div>
+
+    <!-- Formulario de registro -->
+    <div class="form-container">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        
+        <div class="input-group">
+          <!-- Nombre -->
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input 
+              formControlName="name"
+              placeholder="Tu nombre completo"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+
+          <!-- Email -->
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input 
+              type="email" 
+              formControlName="email"
+              placeholder="Tu email"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+
+          <!-- Contraseña -->
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input 
+              type="password" 
+              formControlName="password"
+              placeholder="Crea una contraseña"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+
+          <!-- Rol -->
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+            <ion-select 
+              formControlName="role"
+              placeholder="Selecciona tu rol"
+              class="modern-select">
+              <ion-select-option value="Camarero">👨‍💼 Camarero</ion-select-option>
+              <ion-select-option value="Barista">☕ Barista</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Tarifa por hora -->
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="cash-outline" slot="start"></ion-icon>
+            <ion-input 
+              type="number" 
+              formControlName="hourlyRate"
+              placeholder="Tarifa por hora (€)"
+              class="modern-input">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <!-- Botón de registro -->
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          [disabled]="loading" 
+          class="register-btn">
+          <span class="btn-text">Crear Cuenta</span>
+          <ion-icon name="person-add-outline" slot="end"></ion-icon>
+        </ion-button>
+
+        <!-- Mensaje de error -->
+        <ion-text color="danger" *ngIf="errorMessage" class="error-message">
+          <ion-icon name="warning-outline"></ion-icon>
+          {{ errorMessage }}
+        </ion-text>
+
+        <!-- Enlace para login -->
+        <div class="footer-links">
+          <p class="switch-link">
+            ¿Ya tienes cuenta?
+            <a routerLink="/login" class="link">Inicia sesión</a>
+          </p>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</ion-content>

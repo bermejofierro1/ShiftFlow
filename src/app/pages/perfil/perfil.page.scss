@@ -1,0 +1,656 @@
+:host {
+  // Variables optimizadas para móvil
+  --ion-safe-area-bottom: 56px;
+  --primary-blue: #4b7fff;
+  --primary-green: #27b26e;
+  --primary-pink: #c365ff;
+  --primary-orange: #ff7a3d;
+  --text-dark: #0f1724;
+  --text-gray: #6b7280;
+  --text-light: #94a3b8;
+  --bg-color: #f8fafc;
+  --card-bg: white;
+  --card-shadow: 0 4px 20px rgba(16, 24, 40, 0.1);
+  --card-radius: 20px;
+  --avatar-size: 90px;
+  --header-height: 260px;
+  --section-spacing: 28px;
+}
+
+// Header fijo para móvil
+ion-toolbar {
+  --background: linear-gradient(135deg, #4b7fff, #6aa6ff);
+  --color: white;
+  --min-height: 56px;
+  --border-width: 0;
+  
+  ion-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    padding: 0;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Contenido principal optimizado para móvil
+.perfil-content {
+  --background: var(--bg-color);
+  --padding-top: 0;
+  --padding-bottom: calc(var(--ion-safe-area-bottom) + 24px);
+  --padding-start: 0;
+  --padding-end: 0;
+  
+  &.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  // Scroll suave para móvil
+  -webkit-overflow-scrolling: touch;
+}
+
+// Header del perfil optimizado para móvil - MEJORADO CON MÁS ESPACIO
+.profile-header {
+  background: linear-gradient(135deg, #4b7fff, #6aa6ff);
+  padding: 36px 20px 48px;
+  color: white;
+  text-align: center;
+  position: relative;
+  min-height: var(--header-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  
+  .avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 28px;
+    
+    .avatar {
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 900;
+      color: white;
+      border: 5px solid rgba(255, 255, 255, 0.5);
+      background: linear-gradient(135deg, var(--primary-orange), #ffb16a);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    .edit-avatar-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      --background: white;
+      --color: var(--primary-blue);
+      --border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      --padding-start: 0;
+      --padding-end: 0;
+      margin: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+  }
+  
+  .user-info {
+    width: 100%;
+    
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .role {
+      margin: 0 0 24px 0;
+      font-size: 18px;
+      opacity: 0.95;
+      font-weight: 600;
+      padding-bottom: 16px;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+      display: inline-block;
+      letter-spacing: 0.3px;
+    }
+    
+    .location {
+      margin: 16px auto 0;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.9;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+// Sección de estadísticas - MEJORADA CON MÁS SEPARACIÓN
+.stats-section {
+  margin: -32px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+  
+  // Tarjeta principal de total ganado
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    padding: 32px 28px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    border-left: 8px solid var(--primary-green);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: 0;
+    
+    .stat-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      
+      &.earning {
+        background: linear-gradient(135deg, var(--primary-green), #1db08a);
+        box-shadow: 0 8px 20px rgba(39, 178, 110, 0.35);
+      }
+    }
+    
+    .stat-details {
+      flex: 1;
+      min-width: 0;
+      
+      h3 {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        color: var(--text-gray);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
+      }
+      
+      .stat-value {
+        margin: 0;
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--text-dark);
+        line-height: 1;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        letter-spacing: -0.5px;
+      }
+    }
+  }
+  
+  // Grid de estadísticas secundarias
+  .stats-grid {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    padding: 28px 24px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 0 16px;
+      
+      .stat-label {
+        font-size: 15px;
+        color: var(--text-gray);
+        margin-bottom: 10px;
+        font-weight: 700;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        opacity: 0.8;
+      }
+      
+      .stat-number {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--primary-blue);
+        line-height: 1;
+        display: block;
+        
+        &::after {
+          content: attr(data-suffix);
+          font-size: 16px;
+          color: var(--text-gray);
+          font-weight: 600;
+          margin-left: 4px;
+          opacity: 0.7;
+        }
+      }
+      
+      &:first-child .stat-number {
+        color: var(--primary-orange);
+      }
+      
+      &:last-child .stat-number {
+        color: var(--primary-pink);
+      }
+    }
+    
+    .stat-divider {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, #e5e7eb, #e5e7eb, transparent);
+    }
+  }
+}
+
+// Secciones optimizadas para móvil - MEJORADO ESPACIADO
+.section {
+  padding: 0 20px;
+  margin-bottom: var(--section-spacing);
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0 0 20px 0;
+    padding-bottom: 16px;
+    border-bottom: 3px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.3px;
+    
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 22px;
+      background: var(--primary-blue);
+      border-radius: 3px;
+      margin-right: 12px;
+    }
+  }
+}
+
+// Listas optimizadas para móvil - MEJORADO ESPACIADO
+.info-list, .settings-list, .options-list {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 12px 8px;
+  box-shadow: var(--card-shadow);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  
+  ion-item {
+    --padding-start: 20px;
+    --padding-end: 20px;
+    --inner-padding-end: 16px;
+    --min-height: 68px;
+    --border-color: #f8fafc;
+    --background-activated: #f8fafc;
+    --background-hover: #f8fafc;
+    --border-radius: 16px;
+    margin: 6px 0;
+    
+    ion-icon[slot="start"] {
+      margin-right: 16px;
+      font-size: 22px;
+      color: var(--primary-blue);
+      background: rgba(75, 127, 255, 0.12);
+      padding: 10px;
+      border-radius: 12px;
+      min-width: 44px;
+      text-align: center;
+    }
+    
+    ion-icon[slot="end"] {
+      font-size: 20px;
+      color: var(--text-light);
+      opacity: 0.7;
+    }
+    
+    ion-label {
+      h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-gray);
+        margin: 0 0 6px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.8;
+      }
+      
+      p {
+        font-size: 18px;
+        color: var(--text-dark);
+        margin: 0;
+        font-weight: 700;
+        line-height: 1.3;
+        
+        &.highlight {
+          color: var(--primary-green);
+          font-weight: 800;
+        }
+      }
+    }
+    
+    ion-toggle {
+      --handle-width: 22px;
+      --handle-height: 22px;
+      --background-checked: var(--primary-blue);
+      --handle-background-checked: white;
+      --handle-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+    
+    &.editable {
+      &:active {
+        background: #f8fafc;
+      }
+      
+      p {
+        color: var(--primary-blue);
+      }
+    }
+    
+    // Separadores entre items
+    &:not(:last-child) {
+      --border-color: #f1f5f9;
+      --border-width: 0 0 1px 0;
+      --inner-border-width: 0;
+    }
+  }
+}
+
+// Logout optimizado para móvil - MEJORADO
+.logout-section {
+  padding: 24px 20px;
+  margin-bottom: calc(var(--ion-safe-area-bottom) + 16px);
+  
+  ion-button {
+    --color: #ef4444;
+    --background: rgba(239, 68, 68, 0.05);
+    --border-radius: 16px;
+    font-weight: 800;
+    text-transform: none;
+    font-size: 17px;
+    --padding-top: 18px;
+    --padding-bottom: 18px;
+    height: 56px;
+    --border-width: 2px;
+    --border-color: rgba(239, 68, 68, 0.15);
+    letter-spacing: 0.3px;
+    
+    ion-icon {
+      margin-right: 12px;
+      font-size: 22px;
+    }
+    
+    &:active {
+      --background: rgba(239, 68, 68, 0.1);
+    }
+  }
+}
+
+// Estado vacío optimizado para móvil
+.empty-state {
+  text-align: center;
+  padding: 100px 28px;
+  
+  .empty-icon {
+    font-size: 72px;
+    color: #d1d5db;
+    margin-bottom: 28px;
+    opacity: 0.7;
+  }
+  
+  h3 {
+    font-size: 22px;
+    color: var(--text-dark);
+    margin: 0 0 16px 0;
+    font-weight: 800;
+  }
+  
+  p {
+    font-size: 17px;
+    color: var(--text-gray);
+    margin: 0 0 36px 0;
+    line-height: 1.5;
+    max-width: 300px;
+    margin: 0 auto 36px;
+  }
+  
+  ion-button {
+    --background: linear-gradient(135deg, #4b7fff, #6aa6ff);
+    --color: white;
+    --border-radius: 16px;
+    height: 56px;
+    font-weight: 800;
+    font-size: 17px;
+    max-width: 240px;
+    margin: 0 auto;
+    --box-shadow: 0 6px 16px rgba(75, 127, 255, 0.3);
+    letter-spacing: 0.3px;
+  }
+}
+
+// Spinner optimizado para móvil
+.center-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--primary-blue);
+  width: 48px;
+  height: 48px;
+}
+
+// Mejoras para pantallas muy pequeñas
+@media (max-width: 320px) {
+  :host {
+    --avatar-size: 80px;
+    --header-height: 240px;
+    --card-radius: 18px;
+  }
+  
+  .profile-header {
+    padding: 32px 16px 44px;
+    
+    h1 {
+      font-size: 26px;
+    }
+    
+    .role {
+      font-size: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+    }
+    
+    .location {
+      font-size: 14px;
+    }
+  }
+  
+  .stats-section {
+    margin: -28px 16px 28px;
+  }
+  
+  .stat-card {
+    padding: 28px 20px;
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 26px;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+    }
+  }
+  
+  .stats-grid {
+    padding: 24px 20px;
+    
+    .stat-number {
+      font-size: 24px;
+    }
+  }
+  
+  .section {
+    padding: 0 16px;
+  }
+  
+  .info-list, .settings-list, .options-list {
+    ion-item {
+      --min-height: 64px;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      
+      ion-label p {
+        font-size: 17px;
+      }
+    }
+  }
+}
+
+// Mejoras para pantallas más grandes (tablets)
+@media (min-width: 768px) {
+  :host {
+    --avatar-size: 110px;
+    --header-height: 280px;
+    --section-spacing: 32px;
+  }
+  
+  .profile-header {
+    padding: 44px 28px 56px;
+    
+    h1 {
+      font-size: 34px;
+    }
+    
+    .role {
+      font-size: 20px;
+    }
+    
+    .location {
+      font-size: 18px;
+    }
+  }
+  
+  .stats-section {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .section {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .stat-card {
+    .stat-value {
+      font-size: 40px;
+    }
+  }
+  
+  .stats-grid {
+    .stat-number {
+      font-size: 30px;
+    }
+  }
+}
+
+// Efectos de feedback táctil para móvil
+@keyframes gentleTap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Efecto al tocar items
+ion-item.button-has-effect:active {
+  animation: gentleTap 0.15s ease;
+}
+
+// Asegurar que los botones sean fácilmente tocables en móvil
+ion-button, ion-item[button] {
+  min-height: 52px;
+}
+
+// Mejorar la legibilidad en móvil
+p, h1, h2, h3, ion-label {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.1px;
+}
+
+// Clase para valores destacados
+.highlight-value {
+  color: var(--primary-green) !important;
+  font-weight: 900 !important;
+}
+
+// Optimizar para modo oscuro en móvil
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg-color: #111827;
+    --card-bg: #1f2937;
+    --text-dark: #f9fafb;
+    --text-gray: #d1d5db;
+    --text-light: #9ca3af;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .profile-header {
+    background: linear-gradient(135deg, #374151, #4b5563);
+  }
+  
+  .info-list, .settings-list, .options-list {
+    ion-item {
+      ion-icon[slot="start"] {
+        background: rgba(75, 127, 255, 0.15);
+      }
+    }
+  }
+  
+  .stat-card, .stats-grid {
+    border-top-color: rgba(255, 255, 255, 0.05);
+  }
+}

@@ -1,0 +1,308 @@
+
+:host {
+  // Variables para los tabs
+  --tab-height: 60px;
+  --tab-bg: white;
+  --tab-border: rgba(0, 0, 0, 0.05);
+  --tab-active-color: #4b7fff;
+  --tab-inactive-color: #6b7280;
+  --tab-shadow: 0 -4px 20px rgba(16, 24, 40, 0.08);
+  --tab-border-radius: 20px 20px 0 0;
+  --tab-icon-size: 22px;
+  --tab-label-size: 11px;
+  
+  // Safe area para notch y home indicator
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+ion-tabs {
+  // Asegurar que los tabs estén sobre el contenido
+  z-index: 1000;
+}
+
+ion-tab-bar {
+  // Diseño moderno con fondo blanco y sombra
+  --background: var(--tab-bg);
+  --border: 1px solid var(--tab-border);
+  --box-shadow: var(--tab-shadow);
+  border-radius: var(--tab-border-radius);
+  height: calc(var(--tab-height) + var(--ion-safe-area-bottom));
+  min-height: calc(var(--tab-height) + var(--ion-safe-area-bottom));
+  padding-top: 8px;
+  padding-bottom: calc(8px + var(--ion-safe-area-bottom));
+  position: relative;
+  overflow: visible;
+  
+  // Efecto de desenfoque (frosted glass)
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  // Borde superior sutil
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+  }
+}
+
+ion-tab-button {
+  // Colores base
+  --color: var(--tab-inactive-color);
+  --color-selected: var(--tab-active-color);
+  position: relative;
+  overflow: visible;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Contenedor de icono y etiqueta
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  
+  // Icono
+  ion-icon {
+    font-size: var(--tab-icon-size);
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    position: relative;
+  }
+  
+  // Etiqueta
+  ion-label {
+    font-size: var(--tab-label-size);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    position: relative;
+  }
+  
+  // Estado inactivo
+  &:not(.tab-selected) {
+    ion-icon {
+      transform: scale(0.9);
+    }
+    
+    ion-label {
+      opacity: 0.7;
+      transform: translateY(2px);
+    }
+  }
+  
+  // Estado activo
+  &.tab-selected {
+    // Efecto de botón activo
+    &::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: var(--tab-active-color);
+      border-radius: 50%;
+      opacity: 0.1;
+      z-index: 1;
+    }
+    
+    // Indicador activo
+    &::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      background: var(--tab-active-color);
+      border-radius: 2px;
+      z-index: 1;
+    }
+    
+    // Icono activo
+    ion-icon {
+      transform: scale(1.1);
+      filter: drop-shadow(0 2px 4px rgba(75, 127, 255, 0.2));
+    }
+    
+    // Etiqueta activa
+    ion-label {
+      font-weight: 600;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  // Efecto al tocar
+  &:active:not(.tab-selected) {
+    ion-icon {
+      transform: scale(0.85);
+      transition: transform 0.1s ease;
+    }
+  }
+}
+
+// Animaciones personalizadas para cada tab
+@keyframes tabBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.tab-selected ion-icon {
+  animation: tabBounce 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Efecto de onda al tocar
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(75, 127, 255, 0.3);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// Ajustes para pantallas pequeñas
+@media (max-width: 320px) {
+  :host {
+    --tab-height: 56px;
+    --tab-icon-size: 20px;
+    --tab-label-size: 10px;
+  }
+  
+  ion-tab-bar {
+    padding-top: 6px;
+  }
+}
+
+// Ajustes para tablets
+@media (min-width: 768px) {
+  :host {
+    --tab-height: 64px;
+    --tab-icon-size: 24px;
+    --tab-label-size: 12px;
+  }
+  
+  ion-tab-bar {
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 30px 30px 0 0;
+    
+    &::before {
+      width: 60px;
+    }
+  }
+  
+  ion-tab-button.tab-selected::before {
+    width: 48px;
+    height: 48px;
+    top: -10px;
+  }
+}
+
+// Modo oscuro (opcional)
+@media (prefers-color-scheme: dark) {
+  :host {
+    --tab-bg: rgba(30, 30, 40, 0.95);
+    --tab-border: rgba(255, 255, 255, 0.1);
+    --tab-active-color: #6aa6ff;
+    --tab-inactive-color: #94a3b8;
+    --tab-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  ion-tab-bar::before {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// Efecto de carga inicial
+ion-tab-button {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.5s ease forwards;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Badge para notificaciones
+ion-tab-button {
+  .notification-badge {
+    position: absolute;
+    top: 8px;
+    right: calc(50% - 24px);
+    width: 6px;
+    height: 6px;
+    background: #ff4757;
+    border-radius: 50%;
+    z-index: 10;
+    animation: pulse 2s infinite;
+    
+    &.count {
+      width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: white;
+      top: 6px;
+      right: calc(50% - 30px);
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+// Efecto de vibración sutil al cambiar de tab
+@keyframes subtleShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.tab-selected ion-icon {
+  animation: 
+    tabBounce 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    subtleShake 0.3s ease;
+}

@@ -1,0 +1,138 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>MisTurnos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshData()">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="home-content" [class.loading]="loading" [fullscreen]="true">
+  
+  <!-- Refresh content -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline"></ion-refresher-content>
+  </ion-refresher>
+  
+  <div class="container">
+    <!-- CARDS GRID -->
+    <div class="cards-grid">
+      <!-- Ingresos del mes -->
+      <div class="card card-1">
+        <div class="card-left">
+          <div class="icon bg-green">€</div>
+        </div>
+        <div class="card-right">
+          <div class="card-title">Ingresos del mes</div>
+          <div class="card-value">{{ formatCurrency(ingresosMes) }}</div>
+          <div class="card-sub">
+            <span class="trend positive">+{{ calculateIncomeChange() }}%</span> vs mes anterior
+          </div>
+        </div>
+      </div>
+
+      <!-- Propinas del mes -->
+      <div class="card card-2">
+        <div class="card-left">
+          <div class="icon bg-blue">★</div>
+        </div>
+        <div class="card-right">
+          <div class="card-title">Propinas del mes</div>
+          <div class="card-value">{{ formatCurrency(propinasMes) }}</div>
+          <div class="card-sub">
+            <span class="trend positive">+{{ calculateTipsChange() }}%</span> vs mes anterior
+          </div>
+        </div>
+      </div>
+
+      <!-- Turnos trabajados -->
+      <div class="card card-3">
+        <div class="card-left">
+          <div class="icon bg-pink">📅</div>
+        </div>
+        <div class="card-right">
+          <div class="card-title">Turnos trabajados</div>
+          <div class="card-value">{{ turnosTrabajadosMes }}</div>
+          <div class="card-sub">
+            <span class="highlight">{{ calculateWeeklyShifts() }} esta semana</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Horas totales -->
+      <div class="card card-4">
+        <div class="card-left">
+          <div class="icon bg-orange">⏱</div>
+        </div>
+        <div class="card-right">
+          <div class="card-title">Horas totales</div>
+          <div class="card-value">{{ horasTotalesMes }}h</div>
+          <div class="card-sub">
+            Promedio: {{ hoursPerShift() | number:'1.1-2' }}h por turno
+          </div>
+        </div>
+      </div>
+    </div> <!-- end cards-grid -->
+
+    <!-- Resumen rápido -->
+    <div class="quick-summary">
+      <div class="summary-item">
+        <div class="summary-value">{{ formatCurrency(calculateHourlyRate()) }}/h</div>
+        <div class="summary-label">Por hora</div>
+      </div>
+      <div class="divider"></div>
+      <div class="summary-item">
+        <div class="summary-value">{{ formatCurrency(calculateTotalIncome()) }}</div>
+        <div class="summary-label">Total ingresos</div>
+      </div>
+    </div>
+
+    <!-- ÚLTIMOS TURNOS -->
+    <div class="section">
+      <div class="section-header">
+        <h3>Últimos Turnos</h3>
+        <ion-button fill="clear" size="small" routerLink="/tabs/turnos">
+          Ver todos
+          <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <ion-list lines="none">
+        <ion-item *ngFor="let turno of ultimosTurnos" class="shift-item" [routerLink]="['/tabs/turnos', 'editar', turno.id]">
+          <ion-avatar slot="start" class="date-avatar">
+            <div class="day">{{ getDayFromDate(turno.date) }}</div>
+            <div class="mon">{{ getMonthFromDate(turno.date) }}</div>
+          </ion-avatar>
+
+          <ion-label class="shift-info">
+            <h3>{{ getWeekdayFromDate(turno.date) }}</h3>
+            <p class="shift-details">
+              <ion-icon name="time-outline" class="time-icon"></ion-icon>
+              {{ turno.hours }}h · {{ turno.notes || 'Turno' }}
+            </p>
+          </ion-label>
+
+          <div slot="end" class="right-side">
+            <div class="earning">{{ formatCurrency(calculateTurnoTotal(turno)) }}</div>
+            <div class="tips">+{{ formatCurrency(turno.tips || 0) }} propinas</div>
+          </div>
+          
+          <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+        </ion-item>
+      </ion-list>
+      
+      <div class="empty-state" *ngIf="ultimosTurnos.length === 0 && !loading">
+        <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+        <p>No hay turnos registrados aún</p>
+        <ion-button fill="outline" size="small" routerLink="/tabs/turnos/nuevo">
+          Agregar turno
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+
+  <ion-spinner *ngIf="loading" class="center-spinner"></ion-spinner>
+</ion-content>

@@ -1,0 +1,541 @@
+.mis-turnos-page {
+  --background: #ffffff;
+  height: 100%;
+  overflow: hidden;
+  
+  &.ion-page {
+    contain: strict;
+    will-change: transform;
+  }
+  
+  .content-container {
+    
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// HEADER CENTRADO
+ion-toolbar {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --border-color: transparent;
+  --color: white;
+  --min-height: 56px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  ion-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none; // Evita interferencias con clics
+    
+    // Solución alternativa para iOS
+    &.ios-title {
+      position: relative;
+      text-align: center;
+      width: 100%;
+      padding: 0 50px; // Deja espacio para botones si los hubiera
+    }
+  }
+  
+  // Asegurar que no haya botones que desplacen el título
+  ion-buttons[slot="start"],
+  ion-buttons[slot="end"] {
+    position: absolute;
+    z-index: 10;
+  }
+  
+  ion-buttons[slot="start"] {
+    left: 8px;
+  }
+  
+  ion-buttons[slot="end"] {
+    right: 8px;
+  }
+}
+
+// Spinner optimizado para móvil
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  padding: 2rem;
+  
+  ion-spinner {
+    --color: #667eea;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+// Estado vacío optimizado para móvil
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #64748b;
+  
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    animation: gentleBounce 2s ease-in-out infinite;
+  }
+  
+  h3 {
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #64748b;
+    max-width: 260px;
+    margin: 0 auto;
+  }
+}
+
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+// Tarjetas optimizadas para móvil
+.week-card {
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 0.75rem 1rem 1rem;
+  padding: 1.25rem;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(102, 126, 234, 0.1);
+  border: 1px solid #f1f5f9;
+  position: relative;
+  overflow: hidden;
+  
+  &:active {
+    background: #f8fafc;
+    transform: scale(0.99);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+}
+
+.week-card h2 {
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: "📅";
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+.week-summary {
+  color: #1e293b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  &::after {
+    content: '💰';
+    font-size: 1rem;
+  }
+}
+
+// Items optimizados para móvil
+.turno-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  --border-color: #f1f5f9;
+  padding: 0.875rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  &:active {
+    background: #f8fafc;
+    border-radius: 12px;
+    margin: 0 -0.5rem;
+    padding: 0.875rem 0.5rem;
+  }
+}
+
+.turno-item ion-label {
+  margin: 0;
+  flex: 1;
+}
+
+.turno-item h3 {
+  color: #1e293b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+  color: #854d0e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+}
+
+// Información de turnos optimizada para móvil
+.turno-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #475569;
+  font-weight: 500;
+  
+  &.hours {
+    color: #4f46e5;
+    font-weight: 600;
+    background: rgba(102, 126, 234, 0.08);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    
+    &::before {
+      content: '🕐';
+      font-size: 0.9rem;
+    }
+  }
+  
+  &.salary {
+    color: #059669;
+    
+    &::before {
+      content: '💰';
+      font-size: 0.9rem;
+    }
+  }
+  
+  &.tips {
+    color: #d97706;
+    
+    &::before {
+      content: '💸';
+      font-size: 0.9rem;
+    }
+  }
+  
+  &.notes {
+    color: #475569;
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    border-left: 3px solid #94a3b8;
+    
+    &::before {
+      content: '📝';
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Lista optimizada para móvil
+ion-list {
+  background: transparent;
+  padding: 0;
+  
+  &.list-ios {
+    margin-bottom: 0;
+  }
+}
+
+// Botones de acción optimizados para móvil
+.turno-item ion-buttons {
+  margin-left: 0.5rem;
+  min-width: 80px;
+  
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    margin: 0 2px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+    
+    &:first-child {
+      --background: #3b82f6;
+      --background-hover: #2563eb;
+      --background-activated: #1d4ed8;
+    }
+    
+    &:last-child {
+      --background: #ef4444;
+      --background-hover: #dc2626;
+      --background-activated: #b91c1c;
+    }
+  }
+}
+
+// FAB optimizado para móvil
+ion-fab {
+  margin-bottom: env(safe-area-inset-bottom, 16px);
+  
+  ion-fab-button {
+    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --background-activated: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    --box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    --color: white;
+    
+    width: 56px;
+    height: 56px;
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// Scroll optimizado para móvil
+ion-content {
+  --overflow: auto;
+  
+  &::part(scroll) {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Animaciones optimizadas para móvil
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.week-card {
+  animation: fadeInUp 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+.week-card:nth-child(1) { animation-delay: 0.05s; }
+.week-card:nth-child(2) { animation-delay: 0.1s; }
+.week-card:nth-child(3) { animation-delay: 0.15s; }
+.week-card:nth-child(4) { animation-delay: 0.2s; }
+.week-card:nth-child(5) { animation-delay: 0.25s; }
+
+// =============================================
+// OPTIMIZACIONES ESPECÍFICAS PARA MÓVIL
+// =============================================
+
+@media screen and (max-width: 360px) {
+  :root {
+    font-size: 14px;
+  }
+  
+  .week-card {
+    margin: 0.625rem 0.75rem 0.875rem;
+    padding: 1rem;
+  }
+  
+  .turno-item {
+    padding: 0.75rem 0;
+  }
+  
+  .turno-item ion-buttons {
+    min-width: 72px;
+    
+    ion-button {
+      width: 32px;
+      height: 32px;
+      
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .week-card {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Safe areas para iPhone X y similares
+@supports (padding: max(0px)) {
+  .mis-turnos-page {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  ion-toolbar {
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: calc(56px + env(safe-area-inset-top, 0px));
+    
+    ion-title {
+      // Compensar el notch
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+  }
+  
+  .week-card {
+    margin-left: max(1rem, env(safe-area-inset-left));
+    margin-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  ion-fab {
+    margin-bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+// Optimizaciones de rendimiento
+.turno-item,
+.week-card,
+ion-fab-button {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// Mejorar interacción táctil
+button, 
+ion-button,
+ion-fab-button,
+.turno-item {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+// Modo oscuro
+@media (prefers-color-scheme: dark) {
+  .mis-turnos-page {
+    --background: #0f172a;
+  }
+  
+  .week-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    
+    &:active {
+      background: #1e293b;
+    }
+  }
+  
+  .week-card h2,
+  .week-summary {
+    color: #f1f5f9;
+  }
+  
+  .turno-item {
+    --border-color: #334155;
+    border-bottom-color: #334155;
+    
+    &:active {
+      background: #1e293b;
+    }
+  }
+  
+  .turno-item h3 {
+    color: #f8fafc;
+  }
+  
+  .info-row {
+    color: #cbd5e1;
+    
+    &.hours {
+      background: rgba(102, 126, 234, 0.15);
+    }
+    
+    &.notes {
+      background: #1e293b;
+      border-left-color: #64748b;
+    }
+  }
+  
+  .empty-state {
+    color: #94a3b8;
+    
+    h3 {
+      color: #f1f5f9;
+    }
+    
+    p {
+      color: #94a3b8;
+    }
+  }
+}
