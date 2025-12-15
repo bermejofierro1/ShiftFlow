@@ -165,4 +165,6 @@ https://bermejomiguel.com
 Proyecto de portfolio en evolución, con posibilidad de ampliar funcionalidades y métricas.
 
 
+## 📌 Instalación APK:
+https://drive.google.com/file/d/1vcpLCDXniHKksf_BlcQk3DFqhlQt1rC0/view?usp=drive_link
 
