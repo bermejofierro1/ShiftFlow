@@ -115,6 +115,15 @@ El proyecto está enfocado a trabajadores por turnos (hostelería, eventos, reta
 - date-fns
 
 ---
+## 🧩 Conceptos técnicos aplicados
+- Arquitectura por servicios
+- Estado reactivo con RxJS y BehaviorSubject
+- CRUD avanzado con modales
+- Agregación y análisis de datos
+- Gestión de fechas y turnos nocturnos
+- Visualización de métricas con Chart.js
+- Sincronización en tiempo real con Firestore
+---
 
 ## 📂 Estructura del proyecto
 src/app/
