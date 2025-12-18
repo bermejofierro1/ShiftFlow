@@ -5,9 +5,8 @@ import { FirebaseService } from './firebase.service';
 import { createUserWithEmailAndPassword, onAuthStateChanged, User as AuthUser, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-/**
- * Servicio de autenticación.
- * Proporciona métodos para:
+/** Servicio encargado de la autenticación y gestión del usuario en la aplicación.
+ * Tiene métodos para:
  * - registrar nuevos usuarios,
  * - iniciar y cerrar sesión,
  * - obtener el usuario autenticado actual,
@@ -15,8 +14,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
  * Utiliza Firebase Authentication y Firestore para el almacenamiento de datos de usuarios.
  * Mantiene un BehaviorSubject para el usuario de la aplicación que emite cambios en el estado de autenticación.
  * Permite suscribirse a los cambios del usuario autenticado mediante un Observable público.
- * Maneja errores y estados de carga en las operaciones de autenticación.
- * Proporciona métodos asincrónicos que devuelven Promesas para facilitar su uso en componentes y otros servicios.
+
  *
  */
 @Injectable({
@@ -37,7 +35,6 @@ export class AuthService {
      * Escucha los cambios en el estado de autenticación de Firebase.
      * Actualiza el BehaviorSubject del usuario de la aplicación en consecuencia.
      * Si hay un usuario autenticado, obtiene sus datos de Firestore y los emite.
-     * Si no hay usuario, emite null.
      * Maneja errores al obtener los datos del usuario. 
      * 
      */
@@ -108,6 +105,10 @@ export class AuthService {
       const authUser = credential.user;
 
       const appUser = await this.getAppUser(authUser.uid);
+      if (!appUser) {
+        throw new Error('Perfil de usuario no encontrado. Regístrate o contacta con soporte.');
+      }
+
       this._appUser.next(appUser);
 
       console.log('Login successful for user:', authUser.uid);

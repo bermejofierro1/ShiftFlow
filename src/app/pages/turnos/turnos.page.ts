@@ -35,7 +35,7 @@ export class TurnosPage implements OnInit, OnDestroy {
     private turnoService: TurnoService,
     private modalController: ModalController,
     private authService: AuthService,
-    private alertController: AlertController // Inyectar AlertController
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {

@@ -1,17 +1,17 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { compareDesc, endOfWeek, format, isSameMonth, isSameWeek, parseISO, startOfWeek, subMonths } from 'date-fns';
-import { filter, take } from 'rxjs';
+import { filter, Subscription, take } from 'rxjs';
 import { Turno } from 'src/app/model/turno.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { TurnoService } from 'src/app/services/turno.service';
 
 /**
- * página principal de la aplicación.
+ * p7gina principal de la aplicaci3n.
  * muestra un resumen del rendimiento del usuario autenticado:
  * - ingresos y propinas del mes actual
-  * - comparación con el mes anterior
-  * - turnos trabajados, horas totales y métricas adicionales
-  * - lista de los últimos turnos trabajados
+  * - comparaci3n con el mes anterior
+  * - turnos trabajados, horas totales y m7tricas adicionales
+  * - lista de los 8ltimos turnos trabajados
  */
 @Component({
   selector: 'app-home',
@@ -19,25 +19,26 @@ import { TurnoService } from 'src/app/services/turno.service';
   standalone: false,
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
-  // Métricas del mes actual
+  // M7tricas del mes actual
   ingresosMes = 0;
   propinasMes = 0;
   turnosTrabajadosMes = 0;
   horasTotalesMes = 0;
 
-  // Para comparación con mes anterior
+  // Para comparaci3n con mes anterior
   ingresosMesAnterior = 0;
   propinasMesAnterior = 0;
   turnosMesAnterior = 0;
 
-  // Últimos turnos
+  // 7ltimos turnos
   ultimosTurnos: Turno[] = [];
   allTurnos: Turno[] = [];
 
   loading = true;
   userId: string | null = null;
+  private turnosSub?: Subscription;
 
   constructor(
     private turnoService: TurnoService,
@@ -49,11 +50,15 @@ export class HomePage implements OnInit {
     await this.loadData();
   }
 
+  ngOnDestroy(): void {
+    this.turnosSub?.unsubscribe();
+  }
+
   /**
-   * carga los datos necesarios para la página de inicio:
+   * carga los datos necesarios para la p7gina de inicio:
    * - obtiene el usuario autenticado
    * - se suscribe a los turnos del usuario en tiempo real
-   * - procesa y calcula las métricas a mostrar
+   * - procesa y calcula las m7tricas a mostrar
    * @returns 
    */
   async loadData() {
@@ -71,8 +76,8 @@ export class HomePage implements OnInit {
       return;
     }
 
-    // Suscripción en tiempo real
-    this.turnoService.getTurnosUsuarioObservable()
+    // Suscripci3n en tiempo real
+    this.turnosSub = this.turnoService.getTurnosUsuarioObservable()
       .subscribe(turnos => {
         this.processTurnosData(turnos);
       });
@@ -82,7 +87,7 @@ export class HomePage implements OnInit {
    * procesa los turnos del usuario:
    * - filtra los turnos del usuario actual
    * - ordena por fecha descendente
-   * - calcula métricas del mes actual y anterior
+   * - calcula m7tricas del mes actual y anterior
    * - actualiza el dashboard
    * @param turnos 
    */
@@ -98,10 +103,10 @@ export class HomePage implements OnInit {
       return compareDesc(dateA, dateB);
     });
 
-    // Últimos 6 turnos
+    // 7ltimos 6 turnos
     this.ultimosTurnos = misTurnos.slice(0, 6);
 
-    // Calcular métricas
+    // Calcular m7tricas
     this.calculateMonthlyMetrics(misTurnos);
     this.calculatePreviousMonthMetrics(misTurnos);
 
@@ -110,7 +115,7 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * calcula las métricas del mes actual:
+   * calcula las m7tricas del mes actual:
    * - ingresos
    * - propinas
    * - turnos trabajados
@@ -143,7 +148,7 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * calcula las métricas del mes anterior:
+   * calcula las m7tricas del mes anterior:
    * - ingresos
    * - propinas
    * - turnos trabajados
@@ -172,7 +177,7 @@ export class HomePage implements OnInit {
     this.turnosMesAnterior = cnt;
   }
 
-  // Métodos para el nuevo diseño
+  // M7todos para el nuevo dise5o
   /**
    * calcula el porcentaje de cambio de ingresos entre el mes actual y el anterior.
    * @returns 
@@ -194,7 +199,7 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * devuelve el número de turnos trabajados en la semana actual
+   * devuelve el n8mero de turnos trabajados en la semana actual
    * @returns 
    */
   calculateWeeklyShifts(): number {
@@ -247,7 +252,7 @@ export class HomePage implements OnInit {
   getWeekdayFromDate(dateStr: string): string {
     try {
       const d = parseISO(dateStr);
-      const weekdays = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const weekdays = ['Domingo', 'Lunes', 'Martes', 'Mi9rcoles', 'Jueves', 'Viernes', 'S9bado'];
       return weekdays[d.getDay()];
     } catch {
       return this.formatDateSmall(dateStr);
@@ -280,7 +285,7 @@ export class HomePage implements OnInit {
     return this.turnosTrabajadosMes ? (this.horasTotalesMes / this.turnosTrabajadosMes) : 0;
   }
 
-  // Método para refrescar datos
+  // M7todo para refrescar datos
   refreshData(event?: any) {
     this.loading = true;
 
@@ -298,7 +303,7 @@ export class HomePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Recargar datos cuando se entra a la página
+    // Recargar datos cuando se entra a la p7gina
     if (!this.loading) {
       this.cd.detectChanges();
     }

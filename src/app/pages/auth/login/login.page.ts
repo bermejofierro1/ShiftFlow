@@ -77,6 +77,9 @@ export class LoginPage implements OnInit {
    */
   private getFirebaseErrorMessage(error: any): string {
     const errorCode = error.code;
+    if (!errorCode && error?.message) {
+      return error.message;
+    }
 
     switch (errorCode) {
       case 'auth/invalid-credential':

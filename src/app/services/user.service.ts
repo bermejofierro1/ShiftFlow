@@ -7,13 +7,11 @@ import { UserSettings } from '../model/userSettings.model';
 /**
  * Servicio encargado de la gestión de datos del usuario en Firestore.
  *
- * Responsabilidades:
+ * Tiene métodos para:
  * - Actualizar información del perfil del usuario
  * - Gestionar campos específicos (teléfono, settings, fechas)
  * - Obtener datos del usuario desde la base de datos
- *
- * Este servicio complementa al AuthService, separando claramente
- * la autenticación de la gestión de datos del dominio.
+
  */
 @Injectable({
   providedIn: 'root',

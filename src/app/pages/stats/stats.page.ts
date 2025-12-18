@@ -1,6 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { addDays, endOfWeek, endOfMonth, format, isSameMonth, parseISO, startOfWeek } from 'date-fns';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Turno } from 'src/app/model/turno.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { TurnoService } from 'src/app/services/turno.service';
 import {
   Chart,
@@ -25,29 +28,16 @@ Chart.register(
 );
 Chart.register(Filler);
 
-/**
- * Página de estadísticas avanzadas del usuario.
- * proporciona analisis detallado de los turnos trabajados mediante:
- * - gráficos de ingresos y horas trabajadas
- * - filtros por periodo
- * - filtro por ubicación
- * - métricas históricas y comparativas
- * - proyecciones mensuales y meta salariales
- * - recomendaciones basadas en rendimiento histórico
- */
 @Component({
   selector: 'app-stats',
   templateUrl: './stats.page.html',
   standalone: false,
   styleUrls: ['./stats.page.scss'],
 })
-export class StatsPage implements OnInit, AfterViewInit {
-
-  //Referencia a los canvas donde se renderizan los gráficos
+export class StatsPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('ingresosCanvas', { static: false }) ingresosCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('horasCanvas', { static: false }) horasCanvas!: ElementRef<HTMLCanvasElement>;
 
-  //instancias de Chart.js
   ingresosChart!: Chart;
   horasChart!: Chart;
 
@@ -58,19 +48,16 @@ export class StatsPage implements OnInit, AfterViewInit {
   selectedLocation = 'all';
   locations: string[] = [];
 
-  //Métricas principales
   salarioTotal = 0;
   propinasTotal = 0;
   promedioPorTurno = 0;
   totalHoras = 0;
 
-  //métricas históricas y comparativas
   totalIngresos = 0;
   mejorMes = '';
   ingresosMejorMes = 0;
   promedioTotal = 0;
 
-  //variables relacionadas con metas mensuales y proyecciones y planificación del trabajo
   projectedIngresosMes = 0;
   projectedPropinasMes = 0;
   proyeccionVsMejorMes = 0;
@@ -104,14 +91,40 @@ export class StatsPage implements OnInit, AfterViewInit {
   weeklyPlanHorasNecesarias = 0;
 
   loading = true;
-  private metaStorageKey = 'turnos_meta_salarial';
+  private metaStorageKeyBase = 'turnos_meta_salarial';
+  private metaStorageKey = this.metaStorageKeyBase;
+  private turnosSub?: Subscription;
+  private userSub?: Subscription;
+  private userId: string | null = null;
 
-  constructor(private turnoService: TurnoService) { }
+  constructor(private turnoService: TurnoService, private authService: AuthService) {}
 
   ngOnInit() {
     this.setDefaultRange();
-    this.loadMonthlyGoal();
-    this.turnoService.getTurnosUsuarioObservable().subscribe(turnos => {
+    this.userSub = this.authService.CurrentAppUser.pipe(take(1)).subscribe(user => {
+      this.userId = user?.id ?? null;
+      this.updateMetaStorageKey();
+      this.loadMonthlyGoal();
+      this.subscribeToTurnos();
+    });
+  }
+
+  ngAfterViewInit() {
+    if (this.turnos.length > 0) {
+      this.renderCharts();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.turnosSub?.unsubscribe();
+    this.userSub?.unsubscribe();
+    this.ingresosChart?.destroy();
+    this.horasChart?.destroy();
+  }
+
+  private subscribeToTurnos() {
+    this.turnosSub?.unsubscribe();
+    this.turnosSub = this.turnoService.getTurnosUsuarioObservable().subscribe(turnos => {
       this.turnos = turnos;
       this.updateLocations();
       this.calcularMetricas();
@@ -121,12 +134,6 @@ export class StatsPage implements OnInit, AfterViewInit {
         this.renderCharts();
       }
     });
-  }
-
-  ngAfterViewInit() {
-    if (this.turnos.length > 0) {
-      this.renderCharts();
-    }
   }
 
   cambiarPeriodo(p: 'mes' | 'semana' | 'rango') {
@@ -158,15 +165,10 @@ export class StatsPage implements OnInit, AfterViewInit {
     this.rangeFin = today.toISOString().split('T')[0];
   }
 
-  /**
-   * Método principal de calculo de métricas:
-   * - ingresos y propinas
-   * - horas y turnos
-   * - métricas mensuales
-   * - proyecciones
-   * - comparativa histórica
-   * - metas y recomendaciones
-   */
+  private updateMetaStorageKey() {
+    this.metaStorageKey = this.userId ? `${this.metaStorageKeyBase}_${this.userId}` : this.metaStorageKeyBase;
+  }
+
   private calcularMetricas() {
     const today = new Date();
     let ingresos = 0;
@@ -179,13 +181,12 @@ export class StatsPage implements OnInit, AfterViewInit {
     let turnosMesActual = 0;
 
     const turnosFiltrados = this.filtrarTurnos();
-    // Para métricas históricas (mejor mes, proyecciones, medias mensuales) usamos todos los turnos filtrados solo por ubicación.
     const turnosPorUbicacion = this.filtrarPorUbicacion(this.turnos);
 
     turnosFiltrados.forEach(t => {
       const s = Number(t.salary ?? 0);
       const tip = Number(t.tips ?? 0);
-      ingresos += s; // ingresos solo con salario, sin propinas
+      ingresos += s;
       propinas += tip;
       horas += Number(t.hours ?? 0);
       cnt++;
@@ -204,7 +205,7 @@ export class StatsPage implements OnInit, AfterViewInit {
       const d = parseISO(t.date);
       if (isNaN(d.getTime())) return;
       const mes = format(d, 'yyyy-MM');
-      const ingreso = Number(t.salary ?? 0); // solo salario para ingresos
+      const ingreso = Number(t.salary ?? 0);
       ingresosPorMes[mes] = (ingresosPorMes[mes] || 0) + ingreso;
       total += ingreso;
       totalTurnos++;
@@ -261,15 +262,8 @@ export class StatsPage implements OnInit, AfterViewInit {
     this.calcularPlanSemanal(turnosPorUbicacion);
   }
 
-  /**
-   * renderiza todas las gráficas activas,
-   * destruye instancias previas para evitar fugas de memoria.
-   * @returns 
-   */
   private renderCharts() {
-    if (!this.hayDatos) {
-      return;
-    }
+    if (!this.hayDatos) return;
     if (!this.ingresosCanvas?.nativeElement || !this.horasCanvas?.nativeElement) return;
 
     if (this.ingresosChart) this.ingresosChart.destroy();
@@ -279,9 +273,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     this.renderHorasChart();
   }
 
-  /**
-   * gráfica de barras: ingresos por mes
-   */
   private renderIngresosChart() {
     const ingresosPorMes: { [mes: string]: number } = {};
     const turnosFiltrados = this.filtrarTurnos();
@@ -289,7 +280,7 @@ export class StatsPage implements OnInit, AfterViewInit {
       const d = parseISO(t.date);
       if (isNaN(d.getTime())) return;
       const mes = format(d, 'yyyy-MM');
-      const ingreso = Number(t.salary ?? 0); // solo salario para ingresos
+      const ingreso = Number(t.salary ?? 0);
       ingresosPorMes[mes] = (ingresosPorMes[mes] || 0) + ingreso;
     });
 
@@ -314,9 +305,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     });
   }
 
-  /**
-   * gráfica de linea: horas trabajadas por día
-   */
   private renderHorasChart() {
     const horasPorDia: { [dia: string]: number } = {};
     const turnosFiltrados = this.filtrarTurnos();
@@ -361,13 +349,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     });
   }
 
-  /**
-   * filtra turnos según:
-   * - periodo seleccionado (mes, semana, rango)
-   * - ubicación seleccionada
-   * - rango de fechas
-  
-   */
   private filtrarTurnos(): Turno[] {
     if (!this.turnos?.length) return [];
     const now = new Date();
@@ -399,11 +380,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     });
   }
 
-  /**
-   * Filtra únicament epor ubicación, usado para métricas históricas globales
-   * @param turnos 
-   * @returns 
-   */
   private filtrarPorUbicacion(turnos: Turno[]): Turno[] {
     if (!turnos?.length) return [];
     return turnos.filter(t => {
@@ -434,11 +410,7 @@ export class StatsPage implements OnInit, AfterViewInit {
       this.monthlyGoalInput = parsed.toString();
     }
   }
-  /**
-   * calcula el progreso hacia la meta mensual y estima turnos y horas necesarias para alcanzarla.
-   * @param ingresosMesActual 
-   * @returns 
-   */
+
   private calcularMetaMensual(ingresosMesActual: number) {
     if (this.monthlyGoal <= 0) {
       this.goalProgress = 0;
@@ -461,11 +433,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     }
   }
 
-  /**
-   * genera un recordatorio inteligente basado en rendimiento histórico del usuario
-   * @param turnos 
-   * @returns 
-   */
   private calcularRecordatorio(turnos: Turno[]) {
     if (this.monthlyGoal <= 0 || this.projectedIngresosMes >= this.monthlyGoal || this.mediaIngresoHoraMes <= 0 || this.mediaHorasTurnoMes <= 0) {
       this.recordatorioActivo = false;
@@ -488,14 +455,6 @@ export class StatsPage implements OnInit, AfterViewInit {
     this.recordatorioActivo = true;
   }
 
-  /**
-   * detecta "hotspot":
-   * - mejor ubicación histórica
-   * - mejor franja horaria histórica
-   * - mejor radio €/h histórico
-   * @param turnos 
-   * @returns 
-   */
   private calcularHotspots(turnos: Turno[]) {
     const locStats: Record<string, { ingreso: number; horas: number }> = {};
     const hourStats: Record<string, { ingreso: number; horas: number }> = {};
@@ -543,20 +502,14 @@ export class StatsPage implements OnInit, AfterViewInit {
       }
     });
 
-    // Si no hay datos de hora, usa ubicación; si no hay nada, valores genéricos
     const fallbackRate = bestRate || bestHourRate || this.mediaIngresoHoraMes;
     return {
       bestLocation: bestLocation || 'Mejor ubicacion historica',
-      bestHourSlot: bestHourSlot || 'Franja con mejor €/h',
+      bestHourSlot: bestHourSlot || 'Franja con mejor EUR/h',
       bestRate: Math.round((fallbackRate || 0) * 100) / 100
     };
   }
 
-  /**
-   * genera un plan automático semanal para alcanzar la meta mensual
-   * @param turnos 
-   * @returns 
-   */
   private calcularPlanSemanal(turnos: Turno[]) {
     this.weeklyPlan = [];
     this.weeklyPlanActivo = false;
@@ -612,9 +565,7 @@ export class StatsPage implements OnInit, AfterViewInit {
       this.weeklyPlanActivo = true;
     }
   }
-  /**
-   * extrae ubicaciones úncias de los turnos para el filtro de ubicación
-   */
+
   private updateLocations() {
     const unique = new Set<string>();
     this.turnos.forEach(t => {
@@ -626,5 +577,4 @@ export class StatsPage implements OnInit, AfterViewInit {
       this.selectedLocation = 'all';
     }
   }
-
 }
