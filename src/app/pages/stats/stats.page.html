@@ -1,239 +1,307 @@
-<ion-header>
+﻿<ion-header>
   <ion-toolbar>
-    <ion-title>Estadísticas</ion-title>
+    <ion-title>Estadisticas</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [class.loading]="loading">
   <div class="content-wrapper">
-    <section class="hero-card">
-      <div class="hero-text">
-        <p class="eyebrow">Panel de rendimiento</p>
-        <h1>Estadisticas de tus turnos</h1>
-        <p class="subtext">Visualiza ingresos, horas y propinas en tiempo real.</p>
-        <div class="chips">
-          <span class="chip">Periodo: {{ periodo === 'mes' ? 'Mes en curso' : 'Semana en curso' }}</span>
-          <span class="chip">Turnos: {{ turnos.length }}</span>
+    <ng-container *ngIf="hayDatos">
+      <section class="section">
+        <div class="section-header">
+          <p class="section-title">Resumen del periodo</p>
+          <p class="section-subtitle" *ngIf="periodo === 'mes'">Proyeccion del mes y avance actual.</p>
+          <p class="section-subtitle" *ngIf="periodo !== 'mes'">Detalle del periodo seleccionado.</p>
         </div>
+        <ng-container *ngIf="periodo === 'mes'; else periodoResumen">
+          <div class="projection-card">
+            <div class="projection-main">
+              <p class="eyebrow">Proyeccion fin de mes</p>
+              <h2>{{ projectedIngresosMes | currency:'EUR':'symbol':'1.2-2' }}</h2>
+              <div class="projection-row">
+                <div class="projection-item">
+                  <span class="label">Llevas este mes</span>
+                  <strong>{{ ingresosMesActual | currency:'EUR':'symbol':'1.2-2' }}</strong>
+                </div>
+                <div class="projection-item">
+                  <span class="label">Dias restantes</span>
+                  <strong>{{ diasRestantesMes }}</strong>
+                </div>
+                <div class="projection-item">
+                  <span class="label">Propinas proyectadas</span>
+                  <strong>{{ projectedPropinasMes | currency:'EUR':'symbol':'1.2-2' }}</strong>
+                </div>
+              </div>
+            </div>
+            <div
+              class="delta-chip"
+              *ngIf="ingresosMejorMes > 0"
+              [class.positive]="proyeccionVsMejorMes >= 0"
+              [class.negative]="proyeccionVsMejorMes < 0"
+            >
+              <ion-icon [name]="proyeccionVsMejorMes >= 0 ? 'trending-up-outline' : 'trending-down-outline'"></ion-icon>
+              <div>
+                <span>{{ proyeccionVsMejorMes | currency:'EUR':'symbol':'1.2-2' }}</span>
+                <small>vs mejor mes</small>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #periodoResumen>
+          <div class="filters-card">
+            <div class="metrics-grid">
+              <div class="metric-card primary">
+                <div class="metric-label">Salario total</div>
+                <div class="metric-value">{{ salarioTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <span class="metric-hint">Periodo seleccionado</span>
+              </div>
+              <div class="metric-card accent">
+                <div class="metric-label">Propinas totales</div>
+                <div class="metric-value">{{ propinasTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <span class="metric-hint">Incluye todas las propinas</span>
+              </div>
+              <div class="metric-card neutral">
+                <div class="metric-label">Ganancia por turno</div>
+                <div class="metric-value">{{ promedioPorTurno | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <span class="metric-hint">Media del periodo</span>
+              </div>
+              <div class="metric-card outline">
+                <div class="metric-label">Horas totales</div>
+                <div class="metric-value">{{ totalHoras }} h</div>
+                <span class="metric-hint">Horas trabajadas</span>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+    </ng-container>
+
+    <section class="section">
+      <div class="section-header">
+        <p class="section-title">Filtros</p>
+        <p class="section-subtitle">Periodo, rango y ubicacion.</p>
       </div>
-      <div class="hero-kpi">
-        <p class="label">Total ingresos</p>
-        <h2>{{ totalIngresos | currency:'EUR':'symbol':'1.2-2' }}</h2>
-        <p class="muted">Mejor mes: {{ mejorMes || '—' }}</p>
+      <div class="filters-card">
+        <ion-segment [(ngModel)]="periodo" (ionChange)="cambiarPeriodo(periodo)">
+          <ion-segment-button value="semana">Semana</ion-segment-button>
+          <ion-segment-button value="mes">Mes</ion-segment-button>
+          <ion-segment-button value="rango">Rango</ion-segment-button>
+        </ion-segment>
+
+        <div class="filters-grid">
+          <div class="range-picker" *ngIf="periodo === 'rango'">
+            <div class="range-field">
+              <label>Inicio</label>
+              <ion-input type="date" [(ngModel)]="rangeInicio" (ionChange)="onRangeChange()"></ion-input>
+            </div>
+            <div class="range-field">
+              <label>Fin</label>
+              <ion-input type="date" [(ngModel)]="rangeFin" (ionChange)="onRangeChange()"></ion-input>
+            </div>
+            <div class="range-helper">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              <span>Filtra las metricas y graficos por fechas personalizadas.</span>
+            </div>
+          </div>
+
+          <div class="location-filter">
+            <label>Ubicacion</label>
+            <ion-select interface="popover" [(ngModel)]="selectedLocation" (ionChange)="onLocationChange()">
+              <ion-select-option value="all">Todas</ion-select-option>
+              <ion-select-option *ngFor="let loc of locations" [value]="loc">{{ loc }}</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="controls-row">
-      <ion-segment [(ngModel)]="periodo" (ionChange)="cambiarPeriodo(periodo)">
-        <ion-segment-button value="semana">Semana</ion-segment-button>
-        <ion-segment-button value="mes">Mes</ion-segment-button>
-        <ion-segment-button value="rango">Rango</ion-segment-button>
-      </ion-segment>
-      <div class="pill">Promedio general: {{ promedioTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
-    </div>
-
-    <div class="filters-row">
-      <div class="range-picker" *ngIf="periodo === 'rango'">
-        <div class="range-field">
-          <label>Inicio</label>
-          <ion-input type="date" [(ngModel)]="rangeInicio" (ionChange)="onRangeChange()"></ion-input>
-        </div>
-        <div class="range-field">
-          <label>Fin</label>
-          <ion-input type="date" [(ngModel)]="rangeFin" (ionChange)="onRangeChange()"></ion-input>
-        </div>
-        <div class="range-helper">
-          <ion-icon name="sparkles-outline"></ion-icon>
-          <span>Filtra las metricas y graficos por fechas personalizadas.</span>
-        </div>
-      </div>
-
-      <div class="location-filter">
-        <label>Ubicacion</label>
-        <ion-select interface="popover" [(ngModel)]="selectedLocation" (ionChange)="onLocationChange()">
-          <ion-select-option value="all">Todas</ion-select-option>
-          <ion-select-option *ngFor="let loc of locations" [value]="loc">{{ loc }}</ion-select-option>
-        </ion-select>
-      </div>
-    </div>
-
-    <div class="goal-card" *ngIf="hayDatos">
-      <div class="goal-header">
-        <div>
-          <p class="eyebrow">Meta mensual (solo salario)</p>
-          <h3>{{ monthlyGoal > 0 ? (monthlyGoal | currency:'EUR':'symbol':'1.0-0') : 'Define una meta' }}</h3>
-          <p class="muted">Dias restantes: {{ diasRestantesMes }}</p>
-        </div>
-        <div class="goal-input">
-          <ion-input type="number" placeholder="Meta €" [(ngModel)]="monthlyGoalInput"></ion-input>
-          <ion-button size="small" (click)="guardarMeta()">Guardar</ion-button>
-        </div>
-      </div>
-      <ion-progress-bar [value]="goalProgress / 100"></ion-progress-bar>
-      <div class="goal-stats">
-        <div>
-          <small>Progreso</small>
-          <strong>{{ goalProgress }}%</strong>
-        </div>
-        <div>
-          <small>Falta segun proyeccion</small>
-          <strong>{{ goalRemaining | currency:'EUR':'symbol':'1.2-2' }}</strong>
-        </div>
-        <div>
-          <small>Turnos necesarios</small>
-          <strong *ngIf="goalTurnosNecesarios > 0">{{ goalTurnosNecesarios }} (~{{ goalHorasNecesarias }} h)</strong>
-          <strong *ngIf="goalTurnosNecesarios === 0">Meta cubierta</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="projection-card" *ngIf="hayDatos">
-      <div>
-        <p class="eyebrow">Proyeccion fin de mes</p>
-        <h2>{{ projectedIngresosMes | currency:'EUR':'symbol':'1.2-2' }}</h2>
-        <p class="muted">Propinas proyectadas: {{ projectedPropinasMes | currency:'EUR':'symbol':'1.2-2' }}</p>
-        <div class="plan-to-best" *ngIf="ingresosMejorMes > 0">
-          <div class="line">
-            <span>Media por turno (mes):</span>
-            <strong>{{ mediaIngresoTurnoMes | currency:'EUR':'symbol':'1.2-2' }} | {{ mediaHorasTurnoMes }} h</strong>
-          </div>
-          <div class="line">
-            <span>Ingreso por hora (mes):</span>
-            <strong>{{ mediaIngresoHoraMes | currency:'EUR':'symbol':'1.2-2' }}</strong>
-          </div>
-          <div class="line">
-            <span>Para igualar mejor mes:</span>
-            <strong *ngIf="turnosParaIgualar > 0">{{ turnosParaIgualar }} turnos (~{{ horasParaIgualar }} h)</strong>
-            <strong *ngIf="turnosParaIgualar === 0">Ya igualado o superado</strong>
-          </div>
-        </div>
-      </div>
-      <div class="delta" [class.positive]="proyeccionVsMejorMes >= 0" [class.negative]="proyeccionVsMejorMes < 0">
-        <ion-icon [name]="proyeccionVsMejorMes >= 0 ? 'trending-up-outline' : 'trending-down-outline'"></ion-icon>
-        <div>
-          <span>{{ proyeccionVsMejorMes | currency:'EUR':'symbol':'1.2-2' }}</span>
-          <small>vs mejor mes</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="reminder-card" *ngIf="recordatorioActivo">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">Recordatorio accionable</p>
-          <h3>Para alcanzar la meta de salario</h3>
-        </div>
-      </div>
-      <p class="reminder-main">Te faltan ~{{ recordatorioHoras }} h ({{ recordatorioTurnos }} turnos) para llegar a la meta con tu ritmo actual.</p>
-      <div class="reminder-grid">
-        <div>
-          <small>Sugerencia</small>
-          <strong>{{ recordatorioTextoUbicacion }}</strong>
-          <p>Refuerza en <span>{{ recordatorioTextoFranja }}</span> (~{{ recordatorioIngresoHoraRef | currency:'EUR':'symbol':'1.2-2' }}/h historico)</p>
-        </div>
-        <div>
-          <small>Estrategia</small>
-          <p>Distribuyelo esta semana: agrega horas/turnos extra en tu franja mas rentable.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="planner-card" *ngIf="weeklyPlanActivo">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">Planificador semanal</p>
-          <h3>Slots sugeridos hasta fin de semana</h3>
-        </div>
-        <div class="planner-pill">
-          Falta ~{{ weeklyPlanHorasNecesarias }} h ({{ weeklyPlanTurnosNecesarios }} turnos)
-        </div>
-      </div>
-      <div class="planner-grid">
-        <div class="planner-item" *ngFor="let p of weeklyPlan">
-          <div class="planner-date">{{ p.fecha }}</div>
-          <div class="planner-body">
-            <div class="planner-hours">{{ p.turnos }} turno(s) · {{ p.horas }} h</div>
-            <div class="planner-meta">
-              <span>{{ p.ubicacion }}</span>
-              <span>{{ p.franja }}</span>
-              <span>~{{ p.rate | currency:'EUR':'symbol':'1.0-0' }}/h</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="planner-hint">Reparte estas horas entre hoy y fin de semana en tu franja/ubicacion mas rentable.</p>
-    </div>
-
     <ng-container *ngIf="hayDatos; else emptyStats">
-      <div class="metrics-grid">
-        <div class="metric-card primary">
-          <div class="metric-label">Salario total</div>
-          <div class="metric-value">{{ salarioTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
-          <span class="metric-hint">Periodo seleccionado</span>
+      <section class="section" *ngIf="periodo === 'mes'">
+        <div class="section-header">
+          <p class="section-title">Meta</p>
+          <p class="section-subtitle">Objetivo mensual y progreso.</p>
         </div>
-        <div class="metric-card accent">
-          <div class="metric-label">Propinas totales</div>
-          <div class="metric-value">{{ propinasTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
-          <span class="metric-hint">Incluye todas las propinas</span>
-        </div>
-        <div class="metric-card neutral">
-          <div class="metric-label">Ganancia por turno</div>
-          <div class="metric-value">{{ promedioPorTurno | currency:'EUR':'symbol':'1.2-2' }}</div>
-          <span class="metric-hint">Media del periodo</span>
-        </div>
-        <div class="metric-card outline">
-          <div class="metric-label">Horas totales</div>
-          <div class="metric-value">{{ totalHoras }} h</div>
-          <span class="metric-hint">Horas trabajadas</span>
-        </div>
-      </div>
-
-      <div class="charts-grid">
-        <div class="chart-card">
-          <div class="card-head">
+        <div class="goal-card">
+          <div class="goal-header">
             <div>
-              <p class="eyebrow">Ingresos</p>
-              <h3>Ingresos por mes</h3>
+              <p class="eyebrow">Meta mensual (solo salario)</p>
+              <h3 *ngIf="monthlyGoal > 0">{{ monthlyGoal | currency:'EUR':'symbol':'1.0-0' }}</h3>
+              <h3 *ngIf="monthlyGoal === 0">Define una meta</h3>
+              <p class="muted">Dias restantes: {{ diasRestantesMes }}</p>
             </div>
-            <span class="legend blue">EUR</span>
-          </div>
-          <canvas #ingresosCanvas></canvas>
-        </div>
-
-        <div class="chart-card">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Horas</p>
-              <h3>Horas trabajadas (semana)</h3>
+            <div class="goal-input">
+              <ion-input type="number" placeholder="Meta EUR" [(ngModel)]="monthlyGoalInput"></ion-input>
+              <ion-button size="small" (click)="guardarMeta()">Guardar</ion-button>
             </div>
-            <span class="legend pink">Horas</span>
           </div>
-          <canvas #horasCanvas></canvas>
+          <div class="goal-helper" *ngIf="monthlyGoal === 0">
+            <p class="muted">Define una meta para ver progreso y recomendaciones.</p>
+          </div>
+          <ng-container *ngIf="monthlyGoal > 0">
+            <ion-progress-bar [value]="goalProgress / 100"></ion-progress-bar>
+            <div class="goal-stats">
+              <div>
+                <small>Progreso</small>
+                <strong>{{ goalProgress }}%</strong>
+              </div>
+              <div>
+                <small *ngIf="goalRemaining > 0">Faltaria segun ritmo actual</small>
+                <small *ngIf="goalRemaining === 0">Proyeccion</small>
+                <strong *ngIf="goalRemaining > 0">{{ goalRemaining | currency:'EUR':'symbol':'1.2-2' }}</strong>
+                <strong *ngIf="goalRemaining === 0" class="success">Llegas a la meta</strong>
+              </div>
+              <div>
+                <small>Turnos necesarios</small>
+                <strong *ngIf="goalTurnosNecesarios > 0">{{ goalTurnosNecesarios }} (~{{ goalHorasNecesarias }} h)</strong>
+                <strong *ngIf="goalTurnosNecesarios === 0">Meta cubierta</strong>
+              </div>
+            </div>
+          </ng-container>
         </div>
-      </div>
+      </section>
 
-      <div class="summary-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Resumen</p>
-            <h3>Vista rapida</h3>
+      <section class="section" *ngIf="periodo === 'mes'">
+        <div class="section-header">
+          <p class="section-title">Rendimiento</p>
+          <p class="section-subtitle">Resumen del periodo seleccionado.</p>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card primary">
+            <div class="metric-label">Salario total</div>
+            <div class="metric-value">{{ salarioTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
+            <span class="metric-hint">Periodo seleccionado</span>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-label">Propinas totales</div>
+            <div class="metric-value">{{ propinasTotal | currency:'EUR':'symbol':'1.2-2' }}</div>
+            <span class="metric-hint">Incluye todas las propinas</span>
+          </div>
+          <div class="metric-card neutral">
+            <div class="metric-label">Ganancia por turno</div>
+            <div class="metric-value">{{ promedioPorTurno | currency:'EUR':'symbol':'1.2-2' }}</div>
+            <span class="metric-hint">Media del periodo</span>
+          </div>
+          <div class="metric-card outline">
+            <div class="metric-label">Horas totales</div>
+            <div class="metric-value">{{ totalHoras }} h</div>
+            <span class="metric-hint">Horas trabajadas</span>
           </div>
         </div>
-        <div class="summary-grid">
-          <div class="summary-item">
-            <span class="label">Total ingresos</span>
-            <span class="value">{{ totalIngresos | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </section>
+
+      <section class="section">
+        <ion-accordion-group class="details-accordion">
+          <ion-accordion value="details">
+            <ion-item slot="header" class="details-header">
+              <ion-label>
+                <h3>Detalles y recomendaciones</h3>
+                <p>Recordatorios, planificador y resumen rapido.</p>
+              </ion-label>
+            </ion-item>
+            <div class="accordion-body" slot="content">
+              <div class="reminder-card" *ngIf="periodo === 'mes' && recordatorioActivo">
+                <div class="card-head">
+                  <div>
+                    <p class="eyebrow">Recordatorio accionable</p>
+                    <h3>Para alcanzar la meta de salario</h3>
+                  </div>
+                </div>
+                <p class="reminder-main">Te faltan ~{{ recordatorioHoras }} h ({{ recordatorioTurnos }} turnos) para llegar a la meta con tu ritmo actual.</p>
+                <div class="reminder-grid">
+                  <div>
+                    <small>Sugerencia</small>
+                    <strong>{{ recordatorioTextoUbicacion }}</strong>
+                    <p>Refuerza en <span>{{ recordatorioTextoFranja }}</span> (~{{ recordatorioIngresoHoraRef | currency:'EUR':'symbol':'1.2-2' }}/h historico)</p>
+                  </div>
+                  <div>
+                    <small>Estrategia</small>
+                    <p>Distribuyelo esta semana: agrega horas/turnos extra en tu franja mas rentable.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="planner-card" *ngIf="periodo === 'mes' && weeklyPlanActivo">
+                <div class="card-head">
+                  <div>
+                    <p class="eyebrow">Planificador semanal</p>
+                    <h3>Slots sugeridos hasta fin de semana</h3>
+                  </div>
+                  <div class="planner-pill">
+                    Falta ~{{ weeklyPlanHorasNecesarias }} h ({{ weeklyPlanTurnosNecesarios }} turnos)
+                  </div>
+                </div>
+                <div class="planner-grid">
+                  <div class="planner-item" *ngFor="let p of weeklyPlan">
+                    <div class="planner-date">{{ p.fecha }}</div>
+                    <div class="planner-body">
+                      <div class="planner-hours">{{ p.turnos }} turno(s) | {{ p.horas }} h</div>
+                      <div class="planner-meta">
+                        <span>{{ p.ubicacion }}</span>
+                        <span>{{ p.franja }}</span>
+                        <span>~{{ p.rate | currency:'EUR':'symbol':'1.0-0' }}/h</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="planner-hint">Reparte estas horas entre hoy y fin de semana en tu franja/ubicacion mas rentable.</p>
+              </div>
+
+              <div class="summary-card">
+                <div class="card-head">
+                  <div>
+                    <p class="eyebrow">Resumen</p>
+                    <h3>Vista rapida</h3>
+                  </div>
+                </div>
+                <div class="summary-grid">
+                  <div class="summary-item">
+                    <span class="label">Total historico</span>
+                    <span class="value">{{ totalIngresos | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Mejor mes</span>
+                    <span class="value">{{ mejorMes || '-' }} | {{ ingresosMejorMes | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Promedio general</span>
+                    <span class="value">{{ promedioTotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <p class="section-title">Graficos</p>
+          <p class="section-subtitle">Ingresos y horas a lo largo del tiempo.</p>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Ingresos</p>
+                <h3>{{ periodo === 'mes' ? 'Ingresos por mes' : 'Ingresos (agrupado por mes)' }}</h3>
+              </div>
+              <span class="legend blue">EUR</span>
+            </div>
+            <canvas #ingresosCanvas></canvas>
           </div>
-          <div class="summary-item">
-            <span class="label">Mejor mes</span>
-            <span class="value">{{ mejorMes || '—' }} | {{ ingresosMejorMes | currency:'EUR':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="summary-item">
-            <span class="label">Promedio por turno</span>
-            <span class="value">{{ promedioTotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+
+          <div class="chart-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Horas</p>
+                <h3>{{ horasChartTitle }}</h3>
+              </div>
+              <span class="legend pink">Horas</span>
+            </div>
+            <canvas #horasCanvas></canvas>
           </div>
         </div>
-      </div>
+      </section>
     </ng-container>
 
     <ng-template #emptyStats>

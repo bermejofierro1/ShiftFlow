@@ -1,0 +1,61 @@
+:host {
+  --bg-color: #f8fafc;
+  --card-bg: white;
+  --text-dark: #0f1724;
+  --text-gray: #6b7280;
+  --card-radius: 16px;
+  --card-shadow: 0 4px 18px rgba(16, 24, 40, 0.08);
+}
+
+.ajustes-content {
+  --background: var(--bg-color);
+  --padding-bottom: 24px;
+}
+
+.section {
+  padding: 16px 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0 0 12px 0;
+}
+
+.settings-list {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 8px;
+  box-shadow: var(--card-shadow);
+}
+
+.sync-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sync-card ion-icon {
+  font-size: 24px;
+  color: #667eea;
+}
+
+.sync-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-gray);
+}
+
+.sync-text p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}

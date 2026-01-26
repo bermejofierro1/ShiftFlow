@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ajustes-content">
+  <div class="section">
+    <h2 class="section-title">Preferencias</h2>
+    <ion-list lines="none" class="settings-list">
+      <ion-item button (click)="openNotifications()">
+        <ion-icon slot="start" name="notifications-outline" color="medium"></ion-icon>
+        <ion-label>Notificaciones</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Sincronización</h2>
+    <div class="sync-card">
+      <ion-icon name="cloud-outline"></ion-icon>
+      <div class="sync-text">
+        <h3>Estado</h3>
+        <p *ngIf="pendingWritesCount > 0">
+          {{ pendingWritesCount }} cambios pendientes de sincronizar
+        </p>
+        <p *ngIf="pendingWritesCount === 0">
+          Todo sincronizado
+        </p>
+      </div>
+    </div>
+  </div>
+</ion-content>

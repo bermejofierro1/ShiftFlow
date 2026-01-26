@@ -1,0 +1,109 @@
+﻿<ion-header>
+  <ion-toolbar>
+    <ion-title>Importar cuadrante</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="content-wrapper">
+    <section class="section">
+      <div class="section-header">
+        <h2>Mis nombres (aliases)</h2>
+        <p>Usa variaciones de tu nombre tal y como aparecen en el cuadrante.</p>
+      </div>
+
+      <div class="alias-input">
+        <ion-input
+          placeholder="Ej: MIGUEL"
+          [(ngModel)]="aliasInput"
+          (keyup.enter)="addAlias()"
+        ></ion-input>
+        <ion-button size="small" (click)="addAlias()">Agregar</ion-button>
+      </div>
+
+      <div class="alias-list" *ngIf="aliases.length > 0">
+        <div class="alias-chip" *ngFor="let alias of aliases; let i = index">
+          <span>{{ alias }}</span>
+          <ion-button fill="clear" size="small" color="danger" (click)="removeAlias(i)">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="alias-empty" *ngIf="aliases.length === 0">
+        No hay aliases aun. Agrega al menos uno para detectar tus turnos.
+      </div>
+
+      <ion-button expand="block" (click)="saveAliases()">Guardar aliases</ion-button>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Subir cuadrante</h2>
+        <p>Sube una foto clara de la tabla semanal.</p>
+      </div>
+
+      <input
+        #fileInput
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        hidden
+      />
+
+      <ion-button expand="block" (click)="pickImage()">Subir foto del cuadrante</ion-button>
+
+      <div class="image-preview" *ngIf="imagePreviewUrl">
+        <img [src]="imagePreviewUrl" alt="Vista previa del cuadrante" />
+      </div>
+    </section>
+
+    <section class="section" *ngIf="loading">
+      <div class="loading-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Leyendo cuadrante...</span>
+      </div>
+    </section>
+
+    <section class="section" *ngIf="!loading">
+      <div class="section-header">
+        <h2>Preview de turnos</h2>
+        <p>Revisa y ajusta antes de guardar.</p>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="empty-preview" *ngIf="imagePreviewUrl && turns.length === 0">
+        No se encontraron turnos. Revisa la foto o tus aliases.
+      </div>
+
+      <ion-list *ngIf="turns.length > 0">
+        <ion-item class="turn-row" *ngFor="let turn of turns; let i = index">
+          <ion-input type="date" [(ngModel)]="turn.date"></ion-input>
+          <ion-input type="time" [(ngModel)]="turn.startTime"></ion-input>
+          <ion-button fill="clear" color="danger" (click)="removeTurn(i)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-button
+        expand="block"
+        [disabled]="turns.length === 0 || loading"
+        (click)="saveTurns()"
+      >
+        Guardar turnos
+      </ion-button>
+    </section>
+
+    <section class="section" *ngIf="ocrText && !loading">
+  <div class="section-header">
+    <h2>Texto detectado (OCR)</h2>
+    <p>Copia/pega este texto si necesitas depurar.</p>
+  </div>
+
+  <ion-textarea [value]="ocrText" autoGrow="true" readonly></ion-textarea>
+</section>
+
+  </div>
+</ion-content>

@@ -1,0 +1,79 @@
+:host {
+  --bg-color: #f8fafc;
+  --card-bg: white;
+  --text-dark: #0f1724;
+  --text-gray: #6b7280;
+  --card-radius: 16px;
+  --card-shadow: 0 4px 18px rgba(16, 24, 40, 0.08);
+}
+
+.notificaciones-content {
+  --background: var(--bg-color);
+  --padding-bottom: 24px;
+}
+
+.section {
+  padding: 16px 20px;
+}
+
+.toggle-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toggle-text h2 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.toggle-text p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-gray);
+}
+
+.section-title {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-gray);
+  font-weight: 700;
+}
+
+.status-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 14px 16px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-card ion-icon {
+  font-size: 22px;
+  color: #667eea;
+}
+
+.status-text p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.status-text small {
+  display: block;
+  color: var(--text-gray);
+  font-size: 12px;
+  margin-top: 2px;
+}

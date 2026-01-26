@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Notificaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="notificaciones-content">
+  <div class="section">
+    <div class="toggle-card">
+      <div class="toggle-text">
+        <h2>Recordatorios de turnos</h2>
+        <p>1 hora antes si el turno es mañana, y 2 recordatorios al día siguiente (12:00 y 16:00).</p>
+      </div>
+      <ion-toggle [checked]="notificationsEnabled" (ionChange)="toggleNotifications($event)"></ion-toggle>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3 class="section-title">Estado</h3>
+    <div class="status-card">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <div class="status-text">
+        <p *ngIf="notificationsEnabled">Notificaciones activas</p>
+        <p *ngIf="!notificationsEnabled">Notificaciones desactivadas</p>
+        <small>{{ pendingNotifications }} programadas</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <ion-button expand="block" (click)="testNotification()">
+      Probar notificación
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,125 @@
+﻿:host {
+  --page-bg: #f7fbff;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --text-dark: #0f1724;
+  --text-gray: #6b7280;
+  --primary-blue: #4b7fff;
+  --success-green: #16a34a;
+}
+
+ion-toolbar {
+  --background: linear-gradient(135deg, #4b7fff, #6aa6ff);
+  --color: #ffffff;
+}
+
+ion-content {
+  --background: var(--page-bg);
+}
+
+.content-wrapper {
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 18px rgba(15, 23, 52, 0.08);
+}
+
+.section-header h2 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  color: var(--text-dark);
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--text-gray);
+  font-size: 13px;
+}
+
+.alias-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.alias-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.alias-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.alias-empty {
+  font-size: 13px;
+  color: var(--text-gray);
+  margin-bottom: 12px;
+}
+
+.image-preview {
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+.image-preview img {
+  width: 100%;
+  display: block;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.error-message {
+  color: #b91c1c;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.empty-preview {
+  color: var(--text-gray);
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.turn-row {
+  --padding-start: 8px;
+  --inner-padding-end: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .turn-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}

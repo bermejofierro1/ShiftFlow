@@ -32,8 +32,17 @@ export class TurnoService {
   private turnosSubject = new BehaviorSubject<Turno[]>([]);
   public readonly turnos$ = this.turnosSubject.asObservable();
 
+  // Turnos futuros en subcoleccion separada
+  private futureTurnosSubject = new BehaviorSubject<Turno[]>([]);
+  public readonly futureTurnos$ = this.futureTurnosSubject.asObservable();
+
+  // Pendientes de sincronizacion (turnos realizados)
+  private pendingWritesSubject = new BehaviorSubject<number>(0);
+  public readonly pendingWrites$ = this.pendingWritesSubject.asObservable();
+
   // Referencia para cancelar la suscripción en tiempo real
   private unsubscribeSnapshot: Unsubscribe | null = null;
+  private unsubscribeFutureSnapshot: Unsubscribe | null = null;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -50,6 +59,7 @@ export class TurnoService {
     this.authService.CurrentAppUser.subscribe((user) => {
       if (user) {
         this.subscribeToTurnos(user.id);
+        this.subscribeToTurnosFuturos(user.id);
       } else {
         this.clearTurnos();
       }
@@ -79,6 +89,9 @@ export class TurnoService {
           this.mapDocToTurno(docSnap, userId)
         );
         this.turnosSubject.next(turnos);
+        this.pendingWritesSubject.next(
+          snapshot.docs.filter((docSnap) => docSnap.metadata.hasPendingWrites).length
+        );
       },
       (error) => {
         // Fallback habitual cuando Firestore exige índices compuestos
@@ -122,6 +135,9 @@ export class TurnoService {
           );
 
         this.turnosSubject.next(turnos);
+        this.pendingWritesSubject.next(
+          snapshot.docs.filter((docSnap) => docSnap.metadata.hasPendingWrites).length
+        );
       },
       (error) => {
         console.error(
@@ -129,6 +145,71 @@ export class TurnoService {
           error
         );
         this.clearTurnos();
+      }
+    );
+  }
+
+  private subscribeToTurnosFuturos(userId: string): void {
+    this.unsubscribeFromTurnosFuturos();
+
+    const turnosRef = collection(
+      this.firebaseService.firestore,
+      'users',
+      userId,
+      'turnos_futuros'
+    );
+
+    const q = query(turnosRef, orderBy('date', 'asc'));
+
+    this.unsubscribeFutureSnapshot = onSnapshot(
+      q,
+      (snapshot) => {
+        const turnos = snapshot.docs.map((docSnap) =>
+          this.mapDocToTurno(docSnap, userId)
+        );
+        this.futureTurnosSubject.next(turnos);
+      },
+      (error) => {
+        if (error.code === 'failed-precondition') {
+          this.subscribeToTurnosFuturosSinOrden(userId);
+          return;
+        }
+
+        if (error.code === 'permission-denied') {
+          this.futureTurnosSubject.next([]);
+          return;
+        }
+
+        console.error('[TurnoService] Error en suscripcion de futuros:', error);
+      }
+    );
+  }
+
+  private subscribeToTurnosFuturosSinOrden(userId: string): void {
+    this.unsubscribeFromTurnosFuturos();
+
+    const turnosRef = collection(
+      this.firebaseService.firestore,
+      'users',
+      userId,
+      'turnos_futuros'
+    );
+
+    this.unsubscribeFutureSnapshot = onSnapshot(
+      turnosRef,
+      (snapshot) => {
+        const turnos = snapshot.docs
+          .map((docSnap) => this.mapDocToTurno(docSnap, userId))
+          .sort(
+            (a, b) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+        this.futureTurnosSubject.next(turnos);
+      },
+      (error) => {
+        console.error('[TurnoService] Error en suscripcion futuros sin orden:', error);
+        this.futureTurnosSubject.next([]);
       }
     );
   }
@@ -167,8 +248,23 @@ export class TurnoService {
     }
   }
 
+  private unsubscribeFromTurnosFuturos(): void {
+    if (this.unsubscribeFutureSnapshot) {
+      this.unsubscribeFutureSnapshot();
+      this.unsubscribeFutureSnapshot = null;
+    }
+  }
+
   getTurnosUsuarioObservable(): Observable<Turno[]> {
     return this.turnos$;
+  }
+
+  getPendingWritesObservable(): Observable<number> {
+    return this.pendingWrites$;
+  }
+
+  getTurnosFuturosObservable(): Observable<Turno[]> {
+    return this.futureTurnos$;
   }
 
   async getTurnosUsuario(userId?: string): Promise<Turno[]> {
@@ -203,12 +299,47 @@ export class TurnoService {
     return docRef.id;
   }
 
+  async addTurnoFuturo(turno: Turno): Promise<string> {
+    if (!turno.userId) {
+      throw new Error('No se puede crear un turno sin userId');
+    }
+
+    const now = new Date().toISOString();
+
+    const turnoRef = collection(
+      this.firebaseService.firestore,
+      'users',
+      turno.userId,
+      'turnos_futuros'
+    );
+
+    const docRef = await addDoc(turnoRef, {
+      ...turno,
+      createdAt: turno.createdAt ?? now,
+      updatedAt: now,
+    });
+
+    return docRef.id;
+  }
+
   async deleteTurno(userId: string, turnoId: string): Promise<void> {
     const turnoRef = doc(
       this.firebaseService.firestore,
       'users',
       userId,
       'turnos',
+      turnoId
+    );
+
+    await deleteDoc(turnoRef);
+  }
+
+  async deleteTurnoFuturo(userId: string, turnoId: string): Promise<void> {
+    const turnoRef = doc(
+      this.firebaseService.firestore,
+      'users',
+      userId,
+      'turnos_futuros',
       turnoId
     );
 
@@ -249,6 +380,9 @@ export class TurnoService {
    */
   clearTurnos(): void {
     this.turnosSubject.next([]);
+    this.futureTurnosSubject.next([]);
+    this.pendingWritesSubject.next(0);
     this.unsubscribeFromTurnos();
+    this.unsubscribeFromTurnosFuturos();
   }
 }

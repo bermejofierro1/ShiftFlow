@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Turno } from 'src/app/model/turno.model';
 import { User } from 'src/app/model/user.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { TurnoService } from 'src/app/services/turno.service';
 import { UserService } from 'src/app/services/user.service';
+import { TurnoModalComponent } from 'src/app/components/turno-modal/turno-modal.component';
+import { TurnoReminderService } from 'src/app/services/turno-reminder.service';
 
 /**
- * Página de perfil del usuario.
- * Muestra información del usuario autenticado,
- * estadísticas de sus turnos,
- * y permite editar datos como el teléfono o configuración de notificaciones.
- * Permite cerrar sesión y navegar a otras secciones relacionadas con el perfil.
+ * PÃ¡gina de perfil del usuario.
+ * Muestra informaciÃ³n del usuario autenticado,
+ * estadÃ­sticas de sus turnos,
+ * y permite editar datos como el telÃ©fono o configuraciÃ³n de notificaciones.
+ * Permite cerrar sesiÃ³n y navegar a otras secciones relacionadas con el perfil.
  * 
  */
 @Component({
@@ -25,28 +27,36 @@ import { UserService } from 'src/app/services/user.service';
 export class PerfilPage implements OnInit {
   user: User | null = null;
   turnos: Turno[] = [];
+  userTurnos: Turno[] = [];
+  futureTurnos: Turno[] = [];
 
-  // Estadísticas
+  // EstadÃ­sticas
   totalGanado: number = 0;
   totalHoras: number = 0;
   totalTurnos: number = 0;
+  totalPropinas: number = 0;
+  totalIngresos: number = 0;
+  mediaPorTurno: number = 0;
 
-  // Configuración
+  // ConfiguraciÃ³n
   notificationsEnabled: boolean = true;
 
   loading: boolean = true;
 
-  /**Suscripciones que evitan la pérdida de memorai */
+  /**Suscripciones que evitan la pÃ©rdida de memorai */
   private userSubscription: Subscription = new Subscription();
   private turnosSubscription: Subscription = new Subscription();
+  private futureTurnosSubscription: Subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
     private turnoService: TurnoService,
-    private userService: UserService, // Añadir UserService
+    private userService: UserService, // AÃ±adir UserService
     private router: Router,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private modalController: ModalController,
+    private turnoReminderService: TurnoReminderService
   ) { }
 
   async ngOnInit() {
@@ -54,7 +64,7 @@ export class PerfilPage implements OnInit {
   }
 
   /**
-   * carga la información del usuario y se suscribe a cambios tanto del usuario autenticado como de sus turnos
+   * carga la informaciÃ³n del usuario y se suscribe a cambios tanto del usuario autenticado como de sus turnos
    *  
    */
   private async loadUserData() {
@@ -65,13 +75,17 @@ export class PerfilPage implements OnInit {
       this.user = user;
 
       if (user) {
-        // Calcular estadísticas
+        // Calcular estadÃ­sticas
+        this.userTurnos = this.turnos.filter(t => t.userId === user.id);
+        this.futureTurnos = this.futureTurnos.filter(t => t.userId === user.id);
         await this.calculateStatistics(user.id);
 
-        // Cargar configuración de notificaciones
+        // Cargar configuraciÃ³n de notificaciones
         this.loadNotificationsSetting();
       } else {
-        // Resetear estadísticas si no hay usuario
+        // Resetear estadÃ­sticas si no hay usuario
+        this.userTurnos = [];
+        this.futureTurnos = [];
         this.totalGanado = 0;
         this.totalHoras = 0;
         this.totalTurnos = 0;
@@ -83,26 +97,37 @@ export class PerfilPage implements OnInit {
     // Suscribirse a cambios en los turnos
     this.turnosSubscription = this.turnoService.getTurnosUsuarioObservable().subscribe(turnos => {
       this.turnos = turnos;
+      this.userTurnos = this.user ? turnos.filter(t => t.userId === this.user?.id) : [];
       if (this.user) {
         this.calculateStatistics(this.user.id);
       }
     });
+
+    this.futureTurnosSubscription = this.turnoService.getTurnosFuturosObservable().subscribe(turnos => {
+      this.futureTurnos = this.user ? turnos.filter(t => t.userId === this.user?.id) : [];
+      this.syncFutureTurnoNotifications();
+    });
   }
 
   /**
-   * calcula las estadísticas del usuario basadas en sus turnos
+   * calcula las estadÃ­sticas del usuario basadas en sus turnos
    * - total ganado
    * - horas trabajadas
-   * - número total de turnos
+   * - nÃºmero total de turnos
    * @param userId 
    */
   private async calculateStatistics(userId: string) {
     const userTurnos = this.turnos.filter(t => t.userId === userId);
 
-    // Total ganado (salario + propinas)
-    this.totalGanado = userTurnos.reduce((total, turno) => {
-      return total + (turno.salary || 0) + (turno.tips || 0);
+    const totalSalario = userTurnos.reduce((total, turno) => {
+      return total + (turno.salary || 0);
     }, 0);
+
+    const totalPropinas = userTurnos.reduce((total, turno) => {
+      return total + (turno.tips || 0);
+    }, 0);
+
+    const totalIngresos = totalSalario + totalPropinas;
 
     // Horas trabajadas
     this.totalHoras = userTurnos.reduce((total, turno) => {
@@ -111,13 +136,24 @@ export class PerfilPage implements OnInit {
 
     // Total de turnos
     this.totalTurnos = userTurnos.length;
+    this.totalPropinas = totalPropinas;
+    this.totalIngresos = totalIngresos;
+    this.totalGanado = totalIngresos;
+    this.mediaPorTurno = this.totalTurnos > 0 ? totalIngresos / this.totalTurnos : 0;
   }
 
   /**
-   * carga la configuración de notificaciones del usuario aplicando valores por defecto si no existen
+   * carga la configuraciÃ³n de notificaciones del usuario aplicando valores por defecto si no existen
    */
   private loadNotificationsSetting() {
     this.notificationsEnabled = this.user?.settings?.notificationsEnabled ?? true;
+  }
+
+  private async syncFutureTurnoNotifications() {
+    await this.turnoReminderService.syncFutureTurnoNotifications(
+      this.futureTurnos,
+      this.notificationsEnabled
+    );
   }
 
   /**Genera un color de avatar basado en el nombre del usuario */
@@ -163,6 +199,67 @@ export class PerfilPage implements OnInit {
     }).format(value);
   }
 
+  formatTurnoDate(dateValue: string): string {
+    if (!dateValue) return '';
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return dateValue;
+
+    return new Intl.DateTimeFormat('es-ES', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short'
+    }).format(date);
+  }
+
+  async onFutureTurnoClick(turno: Turno) {
+    if (!this.user?.id) return;
+
+    const alert = await this.alertController.create({
+      header: 'Turno futuro',
+      message: '¿Has realizado este turno?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'No, eliminar',
+          role: 'destructive',
+          handler: async () => {
+            await this.turnoService.deleteTurnoFuturo(this.user!.id, turno.id);
+          }
+        },
+        {
+          text: 'Sí­, realizado',
+          handler: async () => {
+            const modal = await this.modalController.create({
+              component: TurnoModalComponent,
+              componentProps: {
+                userId: this.user!.id,
+                initialTurno: {
+                  date: turno.date,
+                  startTime: turno.startTime,
+                  endTime: turno.endTime,
+                  tips: turno.tips,
+                  location: turno.location,
+                  notes: turno.notes,
+                  breakTime: turno.breakTime,
+                  status: 'completed'
+                }
+              },
+              cssClass: 'turno-modal-class'
+            });
+
+            await modal.present();
+            const { data } = await modal.onDidDismiss();
+            if (data?.success) {
+              await this.turnoService.deleteTurnoFuturo(this.user!.id, turno.id);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   //obtiene la fecha del primer turno del usuario
   private getStartDateFromTurnos(): Date | null {
     if (!this.turnos || this.turnos.length === 0) return null;
@@ -194,12 +291,12 @@ export class PerfilPage implements OnInit {
   // abre un modal para editar el telefono del usuario
   async editPhone() {
     const alert = await this.alertController.create({
-      header: 'Actualizar teléfono',
+      header: 'Actualizar telÃ©fono',
       inputs: [
         {
           name: 'phone',
           type: 'tel',
-          placeholder: 'Número de teléfono',
+          placeholder: 'NÃºmero de telÃ©fono',
           value: this.user?.phone || '',
           attributes: {
             maxlength: 15,
@@ -226,10 +323,85 @@ export class PerfilPage implements OnInit {
     await alert.present();
   }
 
+  //Editar el precio por hora que gana el usuario ante posibles cambios
+  async editHourlyRate() {
+    const alert = await this.alertController.create({
+      header: 'Actualizar â‚¬/hora',
+      inputs: [
+        {
+          name: 'hourlyRate',
+          type: 'number',
+          placeholder: 'Ej: 10',
+          value: (this.user?.hourlyRate ?? 10).toString(),
+          attributes: { min: 0, step: '0.1' }
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: async (data) => {
+            const value = Number(data.hourlyRate);
+            if (!this.user) return;
+
+            if (Number.isNaN(value) || value <= 0) {
+              const a = await this.alertController.create({
+                header: 'Dato invÃ¡lido',
+                message: 'Introduce un nÃºmero mayor que 0',
+                buttons: ['OK'],
+              });
+              await a.present();
+              return false; // evita que se cierre el alert
+            }
+
+            await this.updateHourlyRate(value);
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+  //Actualizar el precio por hora
+  private async updateHourlyRate(hourlyRate: number) {
+    const loading = await this.loadingController.create({
+      message: 'Actualizando â‚¬/hora...'
+    });
+    await loading.present();
+
+    try {
+      if (!this.user) throw new Error('No hay usuario autenticado');
+
+      await this.userService.updateUser(this.user.id, { hourlyRate });
+
+      // actualizar local
+      this.user.hourlyRate = hourlyRate;
+
+      await loading.dismiss();
+
+      const alert = await this.alertController.create({
+        header: 'Ã‰xito',
+        message: 'â‚¬/hora actualizado correctamente',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } catch (error: any) {
+      await loading.dismiss();
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: error.message || 'No se pudo actualizar el â‚¬/hora',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
+  }
+
+
   //actualiza el telefono del usuario en Firestore y localmente
   private async updatePhone(phone: string) {
     const loading = await this.loadingController.create({
-      message: 'Actualizando teléfono...'
+      message: 'Actualizando telÃ©fono...'
     });
     await loading.present();
 
@@ -244,33 +416,138 @@ export class PerfilPage implements OnInit {
       // 2. Actualizar localmente
       this.user.phone = phone;
 
-      // 3. Actualizar también en el BehaviorSubject de AuthService
+      // 3. Actualizar tambiÃ©n en el BehaviorSubject de AuthService
       // Esto es opcional pero mantiene todo sincronizado
       const updatedUser = { ...this.user };
 
       await loading.dismiss();
 
-      // Mostrar confirmación
+      // Mostrar confirmaciÃ³n
       const alert = await this.alertController.create({
-        header: 'Éxito',
-        message: 'Teléfono actualizado correctamente',
+        header: 'Ã‰xito',
+        message: 'TelÃ©fono actualizado correctamente',
         buttons: ['OK']
       });
       await alert.present();
 
     } catch (error: any) {
-      console.error('Error actualizando teléfono:', error);
+      console.error('Error actualizando telÃ©fono:', error);
       await loading.dismiss();
 
       const alert = await this.alertController.create({
         header: 'Error',
-        message: error.message || 'No se pudo actualizar el teléfono',
+        message: error.message || 'No se pudo actualizar el telÃ©fono',
         buttons: ['OK']
       });
       await alert.present();
     }
   }
-  //activa o desactiva las notificiaciones del usuario y guarda la configuración en Firestore
+
+  //actualizar el correo del usuario
+
+  async editEmail() {
+    const alert = await this.alertController.create({
+      header: 'Actualizar email',
+      message: 'Para cambiar el email, introduce tu contraseÃ±a actual (Firebase lo requiere).',
+      inputs: [
+        {
+          name: 'newEmail',
+          type: 'email',
+          placeholder: 'Nuevo email',
+          value: this.user?.email || ''
+        },
+        {
+          name: 'password',
+          type: 'password',
+          placeholder: 'ContraseÃ±a actual'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: async (data) => {
+            if (!this.user) return;
+
+            const newEmail = (data.newEmail || '').trim();
+            const password = data.password || '';
+
+            if (!newEmail.includes('@')) {
+              const a = await this.alertController.create({
+                header: 'Email invÃ¡lido',
+                message: 'Introduce un email vÃ¡lido',
+                buttons: ['OK'],
+              });
+              await a.present();
+              return false;
+            }
+
+            if (!password || password.length < 6) {
+              const a = await this.alertController.create({
+                header: 'ContraseÃ±a requerida',
+                message: 'Introduce tu contraseÃ±a actual',
+                buttons: ['OK'],
+              });
+              await a.present();
+              return false;
+            }
+
+            await this.updateEmailFlow(password, newEmail);
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async updateEmailFlow(currentPassword: string, newEmail: string) {
+    const loading = await this.loadingController.create({
+      message: 'Actualizando email...'
+    });
+    await loading.present();
+
+    try {
+      if (!this.user) throw new Error('No hay usuario autenticado');
+
+      // 1) Actualiza en Firebase Auth
+      await this.authService.changeEmail(currentPassword, newEmail);
+
+      // 2) Actualiza en Firestore
+      await this.userService.updateUser(this.user.id, { email: newEmail });
+
+      // 3) Actualiza local
+      this.user.email = newEmail;
+
+      await loading.dismiss();
+
+      const alert = await this.alertController.create({
+        header: 'Ã‰xito',
+        message: 'Email actualizado correctamente',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } catch (error: any) {
+      await loading.dismiss();
+
+      const msg = (() => {
+        if (error?.code === 'auth/wrong-password') return 'ContraseÃ±a incorrecta.';
+        if (error?.code === 'auth/email-already-in-use') return 'Ese email ya estÃ¡ en uso.';
+        if (error?.code === 'auth/requires-recent-login') return 'Vuelve a iniciar sesiÃ³n y repite el cambio.';
+        return error.message || 'No se pudo actualizar el email';
+      })();
+
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: msg,
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
+  }
+
+  //activa o desactiva las notificiaciones del usuario y guarda la configuraciÃ³n en Firestore
   async toggleNotifications(event: any) {
     this.notificationsEnabled = event.detail.checked;
 
@@ -289,24 +566,25 @@ export class PerfilPage implements OnInit {
         await this.userService.updateUserSettings(this.user.id, {
           notificationsEnabled: this.notificationsEnabled
         });
+        await this.syncFutureTurnoNotifications();
       } catch (error) {
-        console.error('Error guardando configuración de notificaciones:', error);
+        console.error('Error guardando configuraciÃ³n de notificaciones:', error);
       }
     }
   }
 
-  //muestra confirmación antes de cerrar sesión
+  //muestra confirmaciÃ³n antes de cerrar sesiÃ³n
   async logout() {
     const alert = await this.alertController.create({
-      header: 'Cerrar sesión',
-      message: '¿Estás seguro de que quieres cerrar sesión?',
+      header: 'Cerrar sesiÃ³n',
+      message: 'Â¿EstÃ¡s seguro de que quieres cerrar sesiÃ³n?',
       buttons: [
         {
           text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Cerrar sesión',
+          text: 'Cerrar sesiÃ³n',
           role: 'confirm',
           handler: () => {
             this.performLogout();
@@ -318,10 +596,10 @@ export class PerfilPage implements OnInit {
     await alert.present();
   }
 
-  //ejecuta el cierre de sesión y maneja errores redijiriendo al login
+  //ejecuta el cierre de sesiÃ³n y maneja errores redijiriendo al login
   private async performLogout() {
     const loading = await this.loadingController.create({
-      message: 'Cerrando sesión...'
+      message: 'Cerrando sesiÃ³n...'
     });
     await loading.present();
 
@@ -330,27 +608,25 @@ export class PerfilPage implements OnInit {
       await loading.dismiss();
       this.router.navigate(['/login'], { replaceUrl: true });
     } catch (error) {
-      console.error('Error cerrando sesión:', error);
+      console.error('Error cerrando sesiÃ³n:', error);
       await loading.dismiss();
 
       const alert = await this.alertController.create({
         header: 'Error',
-        message: 'No se pudo cerrar sesión',
+        message: 'No se pudo cerrar sesiÃ³n',
         buttons: ['OK']
       });
       await alert.present();
     }
   }
 
-  // Métodos para navegación Futuras
+  // MÃ©todos para navegaciÃ³n Futuras
   openNotifications() {
-    console.log('Abrir configuración de notificaciones');
-
+    this.router.navigate(['/tabs/notificaciones']);
   }
 
   openSettings() {
-    console.log('Abrir ajustes');
-
+    this.router.navigate(['/tabs/ajustes']);
   }
 
   openPrivacy() {
@@ -366,5 +642,7 @@ export class PerfilPage implements OnInit {
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
     this.turnosSubscription.unsubscribe();
+    this.futureTurnosSubscription.unsubscribe();
   }
 }
+

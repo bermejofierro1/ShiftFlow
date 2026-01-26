@@ -33,6 +33,7 @@ export class TurnoModalComponent implements OnInit {
   @Input() userId!: string;
   //turno a editar (si se está en modo edición)
   @Input() turno?: Turno;
+  @Input() initialTurno?: Partial<Turno>;
   //indica si el modal está en modo edición o creación
   @Input() modoEdicion = false;
 
@@ -90,6 +91,17 @@ export class TurnoModalComponent implements OnInit {
     //si es edición, carga los datos del turno en el formulario
     if (this.modoEdicion && this.turno) {
       this.cargarTurnoEnFormulario(this.turno);
+    } else if (this.initialTurno) {
+      this.turnoForm.patchValue({
+        date: this.initialTurno.date ?? '',
+        startTime: this.initialTurno.startTime ?? '08:00',
+        endTime: this.initialTurno.endTime ?? this.initialTurno.startTime ?? '17:00',
+        tips: this.initialTurno.tips ?? 0,
+        location: this.initialTurno.location ?? '',
+        notes: this.initialTurno.notes ?? '',
+        breakTime: this.initialTurno.breakTime ?? 0,
+        status: this.initialTurno.status ?? 'completed'
+      });
     } else {
       //en creación, estbalece la fecha de hoy por defecto
       const today = new Date().toISOString().split('T')[0];

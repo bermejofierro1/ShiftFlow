@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+﻿import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { addDays, endOfWeek, endOfMonth, format, isSameMonth, parseISO, startOfWeek } from 'date-fns';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -98,6 +98,17 @@ export class StatsPage implements OnInit, AfterViewInit, OnDestroy {
   private userId: string | null = null;
 
   constructor(private turnoService: TurnoService, private authService: AuthService) {}
+
+  get horasChartTitle(): string {
+    switch (this.periodo) {
+      case 'semana':
+        return 'Horas trabajadas (semana)';
+      case 'rango':
+        return 'Horas trabajadas (rango)';
+      default:
+        return 'Horas trabajadas (mes)';
+    }
+  }
 
   ngOnInit() {
     this.setDefaultRange();
@@ -578,3 +589,4 @@ export class StatsPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 }
+

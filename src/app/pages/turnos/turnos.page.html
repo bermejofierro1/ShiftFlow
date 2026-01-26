@@ -6,6 +6,55 @@
 
 <ion-content class="mis-turnos-page" >
   <div class="content-container">
+
+    <div class="toolbar-actions">
+      <ion-button size="small" fill="solid" color="primary" (click)="exportTurnosPdf()" [disabled]="loading">
+        Exportar PDF
+      </ion-button>
+    </div>
+
+    <div class="pending-banner" *ngIf="pendingWritesCount > 0">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <span>{{ pendingWritesCount }} cambios pendientes de sincronizar</span>
+    </div>
+
+    <div class="calendar-card" *ngIf="!loading">
+      <div class="calendar-header">
+        <ion-button fill="clear" size="small" (click)="previousMonth()">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
+        <div class="calendar-title">{{ calendarMonthLabel }}</div>
+        <ion-button fill="clear" size="small" (click)="nextMonth()">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="calendar-weekday" *ngFor="let w of weekdays">{{ w }}</div>
+        <div class="calendar-day" *ngFor="let day of calendarDays" [class.outside]="!day.inMonth" [class.has-turnos]="day.count > 0" [class.selected]="selectedDateKey === formatDateKey(day.date)" (click)="selectDay(day)">
+          <span class="day-number">{{ day.date.getDate() }}</span>
+          <span class="day-count" *ngIf="day.count">{{ day.count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-detail" *ngIf="selectedDateKey">
+      <div class="day-detail-header">
+        <div class="day-detail-title">Turnos del {{ selectedDateKey }}</div>
+        <ion-button size="small" fill="clear" (click)="clearSelectedDay()">Cerrar</ion-button>
+      </div>
+      <ion-list lines="none" class="day-detail-list" *ngIf="selectedDayTurnos.length > 0; else emptyDayTurnos">
+        <ion-item *ngFor="let turno of selectedDayTurnos">
+          <ion-label>
+            <h3>{{ turno.startTime }} - {{ turno.endTime || turno.startTime }}</h3>
+            <p>{{ turno.hours }}h · €{{ turno.salary }} · €{{ turno.tips }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <ng-template #emptyDayTurnos>
+        <div class="day-detail-empty">No hay turnos para este día.</div>
+      </ng-template>
+    </div>
     
     <!-- Spinner de carga -->
     <div class="loading-container" *ngIf="loading">

@@ -16,6 +16,142 @@
   }
 }
 
+.toolbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem 0;
+}
+
+.pending-banner {
+  margin: 0.5rem 1rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 12px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.calendar-card {
+  margin: 0.75rem 1rem 0.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0.75rem 0.75rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-title {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+}
+
+.calendar-day.has-turnos {
+  background: rgba(102, 126, 234, 0.12);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.calendar-day.selected {
+  background: #667eea;
+  color: #ffffff;
+  border: 1px solid #4c5fd1;
+}
+
+.day-detail {
+  margin: 0.75rem 1rem 0;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.day-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.day-detail-title {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.day-detail-list {
+  background: transparent;
+  padding: 0;
+}
+
+.day-detail-empty {
+  padding: 0.75rem;
+  text-align: center;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.calendar-day.outside {
+  opacity: 0.35;
+}
+
+.day-number {
+  font-size: 0.8rem;
+}
+
+.day-count {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  background: #667eea;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  font-weight: 700;
+}
+
 // HEADER CENTRADO
 ion-toolbar {
   --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

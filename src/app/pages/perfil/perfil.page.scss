@@ -274,6 +274,37 @@ ion-toolbar {
   }
 }
 
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
 // Secciones optimizadas para móvil - MEJORADO ESPACIADO
 .section {
   padding: 0 20px;
@@ -387,6 +418,64 @@ ion-toolbar {
       --border-width: 0 0 1px 0;
       --inner-border-width: 0;
     }
+  }
+}
+
+// Lista de turnos
+.turnos-list {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 12px 8px;
+  box-shadow: var(--card-shadow);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  ion-item {
+    --padding-start: 20px;
+    --padding-end: 16px;
+    --inner-padding-end: 10px;
+    --min-height: 64px;
+    --border-color: #f1f5f9;
+    margin: 6px 0;
+
+    ion-label {
+      h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-gray);
+        margin: 0 0 6px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        font-size: 18px;
+        color: var(--text-dark);
+        margin: 0;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.turnos-empty {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--text-gray);
+
+  ion-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: var(--primary-blue);
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
   }
 }
 

@@ -1,11 +1,11 @@
-<ion-header>
+﻿<ion-header>
   <ion-toolbar>
     <ion-title>Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="perfil-content" [class.loading]="loading">
-  
+
   <!-- Avatar y información principal -->
   <div class="profile-header">
     <div class="avatar-container">
@@ -16,7 +16,7 @@
         <ion-icon name="camera-outline"></ion-icon>
       </ion-button>
     </div>
-    
+
     <div class="user-info">
       <h1>{{ user?.name || 'Usuario' }}</h1>
       <p class="role">{{ user?.role || 'Camarero/a' }}</p>
@@ -27,44 +27,94 @@
     </div>
   </div>
 
-  <!-- Estadísticas principales -->
-<div class="stats-section">
-  <div class="stat-card">
-    <div class="stat-icon earning">€</div>
-    <div class="stat-details">
-      <h3>Total ganado</h3>
-      <p class="stat-value highlight-value">{{ formatCurrency(totalGanado) }}</p>
+  <!-- Estadí­sticas principales -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon earning">M</div>
+      <div class="stat-details">
+        <h3>Total ganado</h3>
+        <p class="stat-value highlight-value">{{ formatCurrency(totalGanado) }}</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Horas trabajadas</div>
+        <div class="stat-number" data-suffix="h">{{ totalHoras }}</div>
+      </div>
+
+      <div class="stat-divider"></div>
+
+      <div class="stat-item">
+        <div class="stat-label">Turnos totales</div>
+        <div class="stat-number">{{ totalTurnos }}</div>
+      </div>
     </div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-item">
-      <div class="stat-label">Horas trabajadas</div>
-      <div class="stat-number" data-suffix="h">{{ totalHoras }}</div>
-    </div>
-    
-    <div class="stat-divider"></div>
-    
-    <div class="stat-item">
-      <div class="stat-label">Turnos totales</div>
-      <div class="stat-number">{{ totalTurnos }}</div>
+  <div class="section" *ngIf="user">
+    <h2 class="section-title">Resumen</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Horas</span>
+        <span class="kpi-value">{{ totalHoras }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Salario</span>
+        <span class="kpi-value">{{ formatCurrency(totalIngresos - totalPropinas) }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Propinas</span>
+        <span class="kpi-value">{{ formatCurrency(totalPropinas) }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Total</span>
+        <span class="kpi-value">{{ formatCurrency(totalIngresos) }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Media/turno</span>
+        <span class="kpi-value">{{ formatCurrency(mediaPorTurno) }}</span>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Turnos futuros -->
+  <div class="section" *ngIf="user">
+    <h2 class="section-title">Turnos Próximos</h2>
+
+    <ion-list lines="none" class="turnos-list" *ngIf="futureTurnos.length > 0; else emptyFutureTurnos">
+      <ion-item *ngFor="let turno of futureTurnos" button detail="false" (click)="onFutureTurnoClick(turno)">
+        <ion-label>
+          <h3>{{ formatTurnoDate(turno.date) }}</h3>
+          <p>{{ turno.startTime }} - {{ turno.endTime || turno.startTime }}</p>
+        </ion-label>
+        <ion-badge slot="end" color="medium">{{ turno.status || 'scheduled' }}</ion-badge>
+      </ion-item>
+    </ion-list>
+
+    <ng-template #emptyFutureTurnos>
+      <div class="turnos-empty">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <p>No tienes turnos futuros guardados.</p>
+      </div>
+    </ng-template>
+  </div>
 
   <!-- Información personal -->
   <div class="section">
     <h2 class="section-title">Información personal</h2>
-    
+
     <ion-list lines="none" class="info-list">
-      <ion-item>
+      <ion-item (click)="editEmail()" class="editable">
         <ion-icon slot="start" name="mail-outline" color="medium"></ion-icon>
         <ion-label>
           <h3>Email</h3>
           <p>{{ user?.email || 'No especificado' }}</p>
         </ion-label>
+        <ion-icon slot="end" name="create-outline" color="medium"></ion-icon>
       </ion-item>
-      
+
+
       <ion-item (click)="editPhone()" class="editable">
         <ion-icon slot="start" name="call-outline" color="medium"></ion-icon>
         <ion-label>
@@ -73,15 +123,17 @@
         </ion-label>
         <ion-icon slot="end" name="create-outline" color="medium"></ion-icon>
       </ion-item>
-      
-      <ion-item>
+
+      <ion-item (click)="editHourlyRate()" class="editable">
         <ion-icon slot="start" name="cash-outline" color="medium"></ion-icon>
         <ion-label>
           <h3>Tarifa por hora</h3>
           <p class="highlight">{{ formatCurrency(user?.hourlyRate || 0) }}/hora</p>
         </ion-label>
+        <ion-icon slot="end" name="create-outline" color="medium"></ion-icon>
       </ion-item>
-      
+
+
       <ion-item>
         <ion-icon slot="start" name="calendar-outline" color="medium"></ion-icon>
         <ion-label>
@@ -95,14 +147,14 @@
   <!-- Configuración -->
   <div class="section">
     <h2 class="section-title">Configuración</h2>
-    
+
     <ion-list lines="none" class="settings-list">
       <ion-item button (click)="openNotifications()">
         <ion-icon slot="start" name="notifications-outline" color="medium"></ion-icon>
         <ion-label>Notificaciones</ion-label>
         <ion-toggle [checked]="notificationsEnabled" (ionChange)="toggleNotifications($event)"></ion-toggle>
       </ion-item>
-      
+
       <ion-item button (click)="openSettings()">
         <ion-icon slot="start" name="settings-outline" color="medium"></ion-icon>
         <ion-label>Ajustes</ion-label>
@@ -119,7 +171,7 @@
         <ion-label>Privacidad y seguridad</ion-label>
         <ion-icon slot="end" name="chevron-forward-outline" color="medium"></ion-icon>
       </ion-item>
-      
+
       <ion-item button (click)="openHelp()">
         <ion-icon slot="start" name="help-circle-outline" color="medium"></ion-icon>
         <ion-label>Ayuda y soporte</ion-label>
@@ -136,7 +188,7 @@
     </ion-button>
   </div>
 
-  <!-- Estado vacío cuando no hay usuario -->
+  <!-- Estado vacÃ­o cuando no hay usuario -->
   <div class="empty-state" *ngIf="!user && !loading">
     <ion-icon name="person-outline" class="empty-icon"></ion-icon>
     <h3>No hay usuario</h3>
@@ -149,3 +201,4 @@
   <!-- Spinner de carga -->
   <ion-spinner *ngIf="loading" class="center-spinner"></ion-spinner>
 </ion-content>
+

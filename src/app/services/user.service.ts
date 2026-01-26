@@ -135,4 +135,13 @@ export class UserService {
       throw error;
     }
   }
+
+  /**
+   * Actualizar email del usuario
+   */
+
+  async updateEmail(userId: string, email: string): Promise<boolean> {
+    return this.updateUser(userId, { email });
+  }
+
 }

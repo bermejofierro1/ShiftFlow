@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../model/user.model';
 import { FirebaseService } from './firebase.service';
-import { createUserWithEmailAndPassword, onAuthStateChanged, User as AuthUser, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, User as AuthUser, signInWithEmailAndPassword, signOut, EmailAuthProvider, reauthenticateWithCredential, updateEmail } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 /** Servicio encargado de la autenticación y gestión del usuario en la aplicación.
@@ -29,6 +29,8 @@ export class AuthService {
    */
   private _appUser = new BehaviorSubject<User | null>(null);
   public appUser$: Observable<User | null> = this._appUser.asObservable();
+  private _authReady = new BehaviorSubject<boolean>(false);
+  public authReady$: Observable<boolean> = this._authReady.asObservable();
 
   constructor(private firebaseService: FirebaseService) {
     /**
@@ -50,6 +52,7 @@ export class AuthService {
       } else {
         this._appUser.next(null);
       }
+      this._authReady.next(true);
     });
   }
 
@@ -65,6 +68,7 @@ export class AuthService {
    */
   async register(name: string, email: string, password: string, role: string = 'Camarero', hourlyRate: number = 10): Promise<AuthUser> {
     try {
+      await this.firebaseService.authReady;
       const credential = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
       const authUser = credential.user;
 
@@ -101,6 +105,7 @@ export class AuthService {
   async login(email: string, password: string): Promise<AuthUser> {
     try {
       console.log('AuthService.login called with', email);
+      await this.firebaseService.authReady;
       const credential = await signInWithEmailAndPassword(this.firebaseService.auth, email, password);
       const authUser = credential.user;
 
@@ -153,5 +158,25 @@ export class AuthService {
   get CurrentAppUser(): Observable<User | null> {
     return this.appUser$;
   }
+
+  get AuthReady(): Observable<boolean> {
+    return this.authReady$;
+  }
+
+  /**
+   * Cambiar correo electrónico dle usuario
+   * 
+   */
+  async changeEmail(currentPassword: string, newEmail: string): Promise<void> {
+    const user = this.firebaseService.auth.currentUser;
+    if (!user || !user.email) throw new Error('No hay usuario autenticado');
+
+    // Reautenticación (Firebase lo exige para cambios sensibles)
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+
+    await updateEmail(user, newEmail);
+  }
+
 
 }
