@@ -211,5 +211,8 @@ Proyecto de portfolio en evolución, con posibilidad de ampliar funcionalidades 
 
 
 ## 📌 Instalación APK:
+Incluye ambas versiones:
+- La primera
+- La última y actualizada V0.2
 https://drive.google.com/file/d/1vcpLCDXniHKksf_BlcQk3DFqhlQt1rC0/view?usp=drive_link
 
