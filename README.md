@@ -18,40 +18,7 @@ El proyecto está enfocado a trabajadores por turnos (hostelería, eventos, reta
 
 ---
 
-## 📱 Capturas de la aplicación
 
-### 🔐 Autenticación
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/31921dfa-b152-49cb-b987-d9da9025ce41" width="220" />
-  <img src="https://github.com/user-attachments/assets/130ea18b-9023-42d5-9401-676d78b492bb" width="220" />
-</p>
-
-
-### 🏠 Dashboard
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/ab1e53a3-cffa-453b-8fb8-2eb46bcbb028" width="260" />
-</p>
-
-
-### 🕒 Gestión de turnos
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/68266274-baa7-498c-8a37-31a62a350cc7" width="260" />
-  <img src="https://github.com/user-attachments/assets/4cf67634-ae63-4906-9406-5368a94f868d" width="260" />
-</p>
-
-
-### 📊 Estadísticas
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/d5846966-8854-4022-b5d8-054d3e682ec0" width="260" />
-  <img src="https://github.com/user-attachments/assets/acf69044-96ab-4dd3-9694-0dbb3f00b735" width="260" />
-</p>
-
-### 👤 Perfil
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/1193ae6e-9b3a-4aa8-be25-e46f0e3ac792" width="260" />
-</p>
-
----
 
 ## ✨ Funcionalidades
 
@@ -179,6 +146,41 @@ src/app/
 ├── turno.model.ts
 └── userSettings.model.ts
 
+
+---
+
+## 📱 Capturas de la aplicación
+
+### 🔐 Autenticación
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/31921dfa-b152-49cb-b987-d9da9025ce41" width="220" />
+  <img src="https://github.com/user-attachments/assets/130ea18b-9023-42d5-9401-676d78b492bb" width="220" />
+</p>
+
+
+### 🏠 Dashboard
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ab1e53a3-cffa-453b-8fb8-2eb46bcbb028" width="260" />
+</p>
+
+
+### 🕒 Gestión de turnos
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/68266274-baa7-498c-8a37-31a62a350cc7" width="260" />
+  <img src="https://github.com/user-attachments/assets/4cf67634-ae63-4906-9406-5368a94f868d" width="260" />
+</p>
+
+
+### 📊 Estadísticas
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d5846966-8854-4022-b5d8-054d3e682ec0" width="260" />
+  <img src="https://github.com/user-attachments/assets/acf69044-96ab-4dd3-9694-0dbb3f00b735" width="260" />
+</p>
+
+### 👤 Perfil
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1193ae6e-9b3a-4aa8-be25-e46f0e3ac792" width="260" />
+</p>
 
 ---
 
