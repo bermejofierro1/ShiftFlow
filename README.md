@@ -95,6 +95,40 @@ El proyecto está enfocado a trabajadores por turnos (hostelería, eventos, reta
 
 ---
 
+## 🆕 Últimas actualizaciones
+
+### Nuevas páginas
+- `src/app/pages/ajustes`  
+  Estado de sincronización de writes pendientes.
+- `src/app/pages/notificaciones`  
+  Activar/desactivar recordatorios y test.
+- `src/app/pages/generador`  
+  Importación de turnos desde imagen (OCR).
+
+### Nuevos servicios
+- `ocr.service.ts`  
+  OCR con **Tesseract.js**.
+- `schedule-import.service.ts`  
+  Parser de cuadrantes desde el texto OCR.
+- `turno-reminder.service.ts`  
+  Notificaciones locales con **Capacitor**.
+
+### Cambios relevantes
+- `turno.service.ts`
+  - Subcolección `turnos_futuros`
+  - `futureTurnos$` y `pendingWrites$`
+  - add/delete de turnos futuros
+- `turnos.page.ts`
+  - Calendario mensual + selección de día
+  - Conteo por fecha
+  - Exportar/compartir (jsPDF + Filesystem/Share)
+- `perfil.page.ts`
+  - Notificaciones, turnos futuros
+  - Edición de email y €/hora
+  - Navegación a nuevas secciones
+
+---
+
 ## 🧠 Arquitectura
 
 - Arquitectura basada en servicios
